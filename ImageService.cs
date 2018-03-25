@@ -8,11 +8,13 @@ using System.ServiceProcess;
 using System.Text;
 using System.Threading.Tasks;
 using System.Runtime.InteropServices;
+using ImageService;
 
 namespace ImageProject
 {
 	public partial class ImageService : ServiceBase
 	{
+        private LoggingModel Logger;
 		
 		public ImageService(string[] args)
 		{
@@ -40,6 +42,8 @@ namespace ImageProject
 		{
             // Update the service state to Start Pending.  
             ServiceStatus serviceStatus = new ServiceStatus();
+            Logger = new LoggingModel();
+            Logger.Log += OnMsg;
             serviceStatus.dwCurrentState = ServiceState.SERVICE_START_PENDING;
             serviceStatus.dwWaitHint = 100000;
             SetServiceStatus(this.ServiceHandle, ref serviceStatus);
@@ -56,6 +60,10 @@ namespace ImageProject
 
 
         }
+        public void OnMsg(object sender, string msg)
+        {
+            eventLog1.WriteEntry(msg);
+        }
 
         public void OnTimer(Object sender, System.Timers.ElapsedEventArgs args)
         {
@@ -64,6 +72,7 @@ namespace ImageProject
 
 		protected override void OnStop()
 		{
+            eventLog1.WriteEntry(ServiceState.SERVICE_STOPPED.ToString());
 		}
 
         public enum ServiceState
