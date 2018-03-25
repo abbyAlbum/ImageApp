@@ -6,6 +6,8 @@
 		/// Required designer variable.
 		/// </summary>
 		private System.ComponentModel.IContainer components = null;
+		private System.Diagnostics.EventLog eventLog1;
+        private int eventId = 1;
 
 		/// <summary>
 		/// Clean up any resources being used.
@@ -40,6 +42,5 @@
 
 		#endregion
 
-		private System.Diagnostics.EventLog eventLog1;
 	}
 }
