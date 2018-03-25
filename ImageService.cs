@@ -14,29 +14,48 @@ namespace ImageProject
 	public partial class ImageService : ServiceBase
 	{
 		
-		public ImageService()
+		public ImageService(string[] args)
 		{
-			InitializeComponent();
-			eventLog1 = new System.Diagnostics.EventLog();
-			if (!System.Diagnostics.EventLog.SourceExists("MySource"))
-			{
-				System.Diagnostics.EventLog.CreateEventSource(
-					"MySource", "MyNewLog");
-			}
-			eventLog1.Source = "MySource";
-			eventLog1.Log = "MyNewLog";
-		}
+            InitializeComponent();
+            string eventSourceName = "MySource";
+            string logName = "MyNewLog";
+            if (args.Count() > 0)
+            {
+                eventSourceName = args[0];
+            }
+            if (args.Count() > 1)
+            {
+                logName = args[1];
+            }
+            eventLog1 = new System.Diagnostics.EventLog();
+            if (!System.Diagnostics.EventLog.SourceExists(eventSourceName))
+            {
+                System.Diagnostics.EventLog.CreateEventSource(eventSourceName, logName);
+            }
+            eventLog1.Source = eventSourceName;
+            eventLog1.Log = logName;
+        }
 
 		protected override void OnStart(string[] args)
 		{
+            // Update the service state to Start Pending.  
+            ServiceStatus serviceStatus = new ServiceStatus();
+            serviceStatus.dwCurrentState = ServiceState.SERVICE_START_PENDING;
+            serviceStatus.dwWaitHint = 100000;
+            SetServiceStatus(this.ServiceHandle, ref serviceStatus);
+
             eventLog1.WriteEntry("In OnStart");
             System.Timers.Timer timer = new System.Timers.Timer();
             timer.Interval = 60000;
             timer.Elapsed += new System.Timers.ElapsedEventHandler(this.OnTimer);
             timer.Start();
-                 
-           
-		}
+
+            // Update the service state to Running.  
+            serviceStatus.dwCurrentState = ServiceState.SERVICE_RUNNING;
+            SetServiceStatus(this.ServiceHandle, ref serviceStatus);
+
+
+        }
 
         public void OnTimer(Object sender, System.Timers.ElapsedEventArgs args)
         {
@@ -58,5 +77,20 @@ namespace ImageProject
             SERVICE_PAUSED = 0x00000007,
 
         }
-	}
+
+        [StructLayout(LayoutKind.Sequential)]
+        public struct ServiceStatus
+        {
+            public int dwServiceType;
+            public ServiceState dwCurrentState;
+            public int dwControlsAccepted;
+            public int dwWin32ExitCode;
+            public int dwServiceSpecificExitCode;
+            public int dwCheckPoint;
+            public int dwWaitHint;
+        };
+
+        [DllImport("advapi32.dll", SetLastError = true)]
+        private static extern bool SetServiceStatus(IntPtr handle, ref ServiceStatus serviceStatus);
+    }
 }
