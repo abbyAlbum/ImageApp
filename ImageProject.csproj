@@ -48,6 +48,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ImageModel.cs" />
+    <Compile Include="ImageServiceModel.cs" />
+    <Compile Include="LoggingModel.cs" />
     <Compile Include="ImageService.cs">
       <SubType>Component</SubType>
     </Compile>
