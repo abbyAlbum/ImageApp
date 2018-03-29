@@ -4,10 +4,12 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ImageService
+namespace ImageService.Logging.Modal
 {
-    interface ImageServiceModel
+    public enum MessageTypeEnum : int
     {
-        string AddFile(string path, out bool result);
+        INFO,
+        WARNING,
+        FAIL
     }
 }
