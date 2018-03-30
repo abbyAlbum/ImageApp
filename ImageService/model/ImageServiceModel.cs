@@ -31,11 +31,14 @@ namespace ImageService.Model
                     return "Couldnt create outputdir";
                 }
             }
-           
+            if(!Directory.Exists(path))
+            {
+                result = false;
+                return "path not valid!";
+            }
 
-            string dst = FindFolder(m_OutputFolder);
-
-            MoveFile(path, path, dst);
+            string dst = FindFolder(GetDateTakenFromImage(path));
+            MoveFile(path, dst);
 
             result = true; //when should be false?
 
@@ -59,11 +62,26 @@ namespace ImageService.Model
             }
         }
 
-        public string FindFolder(DateTime date, out bool year, out bool month)
+        public string FindFolder(DateTime date)
         {
 
+            int pic_year = date.Year;
+            int pic_month = date.Month;
+            char sep_char = Path.DirectorySeparatorChar;
 
+            string year_path = m_OutputFolder + sep_char + pic_year.ToString();
+            string month_path = year_path + sep_char + pic_month.ToString();
 
+            if(!Directory.Exists(year_path))
+            {
+                year_path = CreateFolder(pic_year.ToString(), m_OutputFolder);
+                return CreateFolder(pic_month.ToString(), year_path);
+            }
+            if(!Directory.Exists(month_path))
+            {
+                return CreateFolder(pic_month.ToString(), year_path);
+            }
+            return month_path;
 
             /*string month = GetDate(path, out string year);
             string pathYear = path + Path.DirectorySeparatorChar + year;
@@ -75,7 +93,7 @@ namespace ImageService.Model
         }
 
         public string GetDate(string path, out string year)
-        { 
+        {
 
             string[] words = path.Split(Path.DirectorySeparatorChar);
             year = words[words.Length - 1];
@@ -89,17 +107,17 @@ namespace ImageService.Model
             return pathString;
         }
 
-        public void MoveFile(string curDir, string dstDir, string fileName)
+        public void MoveFile(string curDir, string dstDir)
         {
-            string curPathString = Path.Combine(curDir, fileName);
-            string dstPathString = Path.Combine(dstDir, fileName);
+           // string curPathString = Path.Combine(curDir, fileName);
+           // string dstPathString = Path.Combine(dstDir, fileName);
 
-            if (!Directory.Exists(dstPathString))
+            /*if (!Directory.Exists(dstPathString))
             {
                 Directory.CreateDirectory(dstPathString);
-            }
+            }*/
 
-            File.Copy(curPathString, dstPathString, true);
+            File.Copy(curDir, dstDir, true);
 
 
         }
