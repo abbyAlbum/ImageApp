@@ -1,4 +1,5 @@
-﻿using ImageService.Controller;
+﻿using ImageService.Commands;
+using ImageService.Controller;
 using ImageService.Controller.Handlers;
 using ImageService.Infrastructure.Enums;
 using ImageService.Logging;
@@ -17,29 +18,31 @@ namespace ImageService.Server
         private IImageController m_controller;
         private ILoggingService m_logging;
         private Dictionary<int, CommandEnum> commands;
-        private IList<DirectoyHandler> handlers;
         #endregion
 
         #region Properties
         public event EventHandler<CommandRecievedEventArgs> CommandRecieved;          // The event that notifies about a new Command being recieved
         #endregion
 
-        public void AddHandlerToPath(string path)
+        public void CreateHandler(string path)
         {
-            handlers.Add(new DirectoyHandler(m_controller, m_logging, path));
+            
+            IDirectoryHandler h = new DirectoyHandler(m_controller, m_logging, path);
+            CommandRecieved += h.OnCommandRecieved;
+            h.DirectoryClose += OnCloseServer;
         }
 
-        public void CloseHandlers()
+        public void OnCloseServer(Object sender, DirectoryCloseEventArgs args)
         {
-            for(int i = 0;i < handlers.Count; i++)
-            {
-                handlers.ElementAt(i).;
-            }
+            IDirectoryHandler h = (IDirectoryHandler)sender;
+            CommandRecieved -= h.OnCommandRecieved;
+            h.DirectoryClose -= OnCloseServer;
         }
 
         public void SendCommandToController()
         {
-
+            string[] args = null;
+            CommandRecieved("*", new CommandRecievedEventArgs(1, args, ""));
         }
        
     }

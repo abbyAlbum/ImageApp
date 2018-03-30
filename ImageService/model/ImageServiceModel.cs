@@ -24,7 +24,7 @@ namespace ImageService.Model
         {
             if (m_OutputFolder == null)
             {
-                m_OutputFolder = CreateFolder("OutputDir", ""); //prob wont work.. what directory to use?
+                m_OutputFolder = CreateFolder("OutputDir", "");
                 if (!File.Exists(m_OutputFolder))
                 {
                     result = false;
@@ -40,7 +40,7 @@ namespace ImageService.Model
             string dst = FindFolder(GetDateTakenFromImage(path));
             MoveFile(path, dst);
 
-            result = true; //when should be false?
+            result = true;
 
             return "noError";
 
