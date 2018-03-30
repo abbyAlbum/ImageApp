@@ -1,13 +1,9 @@
-﻿using ImageService.Infrastructure;
-using System;
-using System.Collections.Generic;
-using System.Drawing;
+﻿using System;
 using System.IO;
-using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
-using System.Threading;
-using System.Threading.Tasks;
+using System.Drawing;
+using System.Drawing.Imaging;
 
 namespace ImageService.Model
 {
@@ -32,35 +28,57 @@ namespace ImageService.Model
                 if (!File.Exists(m_OutputFolder))
                 {
                     result = false;
-                    return "Not a valid path";
+                    return "Couldnt create outputdir";
                 }
             }
-                string dst = FindFolder(m_OutputFolder);
+           
 
-                MoveFile(path, path, dst);
+            string dst = FindFolder(m_OutputFolder);
 
-                result = true; //when should be false?
+            MoveFile(path, path, dst);
 
-                return "noError";
+            result = true; //when should be false?
 
-            
+            return "noError";
+
         }
 
-        public string FindFolder(string path)
-        {
-            string day = GetDate(path, out string month);
-            string pathMonth = path + Path.DirectorySeparatorChar + month;
-            string pathDay = pathMonth + Path.DirectorySeparatorChar + day;
+        //we init this once so that if the function is repeatedly called
+        //it isn't stressing the garbage man
+        private static Regex r = new Regex(":");
 
-            if (Directory.Exists(pathDay)) return pathDay;
+        //retrieves the datetime WITHOUT loading the whole image
+        public static DateTime GetDateTakenFromImage(string path)
+        {
+            using (FileStream fs = new FileStream(path, FileMode.Open, FileAccess.Read))
+            using (Image myImage = Image.FromStream(fs, false, false))
+            {
+                PropertyItem propItem = myImage.GetPropertyItem(36867);
+                string dateTaken = r.Replace(Encoding.UTF8.GetString(propItem.Value), "-", 2);
+                return DateTime.Parse(dateTaken);
+            }
+        }
+
+        public string FindFolder(DateTime date, out bool year, out bool month)
+        {
+
+
+
+
+            /*string month = GetDate(path, out string year);
+            string pathYear = path + Path.DirectorySeparatorChar + year;
+            string pathMonth = pathYear + Path.DirectorySeparatorChar + month;
+
             if (Directory.Exists(pathMonth)) return pathMonth;
-            return pathDay;
+            if (Directory.Exists(pathYear)) return pathYear;
+            return pathMonth;*/
         }
 
-        public string GetDate(string path, out string month)
-        {
+        public string GetDate(string path, out string year)
+        { 
+
             string[] words = path.Split(Path.DirectorySeparatorChar);
-            month = words[words.Length - 1];
+            year = words[words.Length - 1];
             return words[words.Length];
         }
 
@@ -83,7 +101,7 @@ namespace ImageService.Model
 
             File.Copy(curPathString, dstPathString, true);
 
-            
+
         }
 
         public void RemoveFile(string pathName)

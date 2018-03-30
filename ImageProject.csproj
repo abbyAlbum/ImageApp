@@ -38,6 +38,7 @@
     <Reference Include="System" />
     <Reference Include="System.Configuration.Install" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Drawing" />
     <Reference Include="System.Management" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
@@ -55,10 +56,10 @@
     <Compile Include="ImageService\controller\Handlers\IDirectoryHandler.cs" />
     <Compile Include="ImageService\controller\IImageController.cs" />
     <Compile Include="ImageService\controller\ImageController.cs" />
-    <Compile Include="ImageService\modal\event\CommandRecievedEventArgs.cs" />
-    <Compile Include="ImageService\modal\event\DirectoryCloseEventArgs.cs" />
-    <Compile Include="ImageService\modal\IImageServiceModal.cs" />
-    <Compile Include="ImageService\modal\ImageServiceModal.cs" />
+    <Compile Include="ImageService\model\event\CommandRecievedEventArgs.cs" />
+    <Compile Include="ImageService\model\event\DirectoryCloseEventArgs.cs" />
+    <Compile Include="ImageService\model\IImageServiceModel.cs" />
+    <Compile Include="ImageService\model\ImageServiceModel.cs" />
     <Compile Include="ImageService\server\ImageServer.cs" />
     <Compile Include="ImageService_Logging\ILoggingService.cs" />
     <Compile Include="ImageService_Logging\LoggingModal.cs" />
