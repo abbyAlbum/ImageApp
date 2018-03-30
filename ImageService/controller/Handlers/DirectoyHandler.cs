@@ -1,15 +1,7 @@
 ﻿using ImageService.Modal;
 using System;
 using System.IO;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using ImageService.Infrastructure;
-using ImageService.Infrastructure.Enums;
-using ImageService.Logging;
-using ImageService.Logging.Modal;
-using System.Text.RegularExpressions;
+
 
 namespace ImageService.Controller.Handlers
 {
@@ -48,12 +40,16 @@ namespace ImageService.Controller.Handlers
 
         void IDirectoryHandler.OnCommandRecieved(object sender, CommandRecievedEventArgs e)
         {
-            throw new NotImplementedException();
+            
         }
 
         void IDirectoryHandler.StartHandleDirectory(string dirPath)
         {
-            throw new NotImplementedException();
+            m_dirWatcher.Path = dirPath;
+            m_dirWatcher.Filter = "*.jpg";
+            m_dirWatcher.Filter = "*.pmg";
+            m_dirWatcher.Filter = "*.gif";
+            m_dirWatcher.Filter = "*.bmp";
         }
 
         // Implement Here!

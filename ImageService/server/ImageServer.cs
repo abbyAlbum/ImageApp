@@ -26,7 +26,6 @@ namespace ImageService.Server
        
         public void CreateHandler(string path)
         {
-            
             IDirectoryHandler h = new DirectoyHandler(m_controller, m_logging, path);
             CommandRecieved += h.OnCommandRecieved;
             h.DirectoryClose += OnCloseServer;

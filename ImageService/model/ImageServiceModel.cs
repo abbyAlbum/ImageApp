@@ -24,11 +24,14 @@ namespace ImageService.Model
         {
             if (m_OutputFolder == null)
             {
-                m_OutputFolder = CreateFolder("OutputDir", "");
-                if (!File.Exists(m_OutputFolder))
+                string path1 = @"C:\OutputDir"; // or whatever 
+                if (!Directory.Exists(path1))
                 {
-                    result = false;
-                    return "Couldnt create outputdir";
+                    DirectoryInfo di = Directory.CreateDirectory(path1);
+                    di.Attributes = FileAttributes.Directory | FileAttributes.Hidden;
+                    DirectoryInfo sub_years = di.CreateSubdirectory("Years");
+                    DirectoryInfo sub_Thumb = di.CreateSubdirectory("Thumbnails");
+                    
                 }
             }
             if(!Directory.Exists(path))
@@ -36,13 +39,22 @@ namespace ImageService.Model
                 result = false;
                 return "path not valid!";
             }
+            string[] paths = Directory.GetDirectories(m_OutputFolder);
+            DateTime date = GetDateTakenFromImage(path);
+            string dst = FindFolder(date, paths[0]);
+            string dst2 = FindFolder(date, paths[1]);
 
-            string dst = FindFolder(GetDateTakenFromImage(path));
+            MakeTumb(path,dst2);
             MoveFile(path, dst);
 
             result = true;
 
             return "noError";
+
+        }
+
+        public void MakeTumb(string path_to_pic, string dst)
+        {
 
         }
 
@@ -62,19 +74,19 @@ namespace ImageService.Model
             }
         }
 
-        public string FindFolder(DateTime date)
+        public string FindFolder(DateTime date, string path)
         {
 
             int pic_year = date.Year;
             int pic_month = date.Month;
             char sep_char = Path.DirectorySeparatorChar;
 
-            string year_path = m_OutputFolder + sep_char + pic_year.ToString();
+            string year_path = path + sep_char + pic_year.ToString();
             string month_path = year_path + sep_char + pic_month.ToString();
 
             if(!Directory.Exists(year_path))
             {
-                year_path = CreateFolder(pic_year.ToString(), m_OutputFolder);
+                year_path = CreateFolder(pic_year.ToString(), path);
                 return CreateFolder(pic_month.ToString(), year_path);
             }
             if(!Directory.Exists(month_path))
