@@ -13,6 +13,7 @@ using ImageService.Server;
 using ImageService.Modal;
 using ImageService.Controller;
 using ImageService.ImageService_Logging.Model;
+using ImageService.Model;
 
 namespace ImageProject
 {
@@ -44,7 +45,7 @@ namespace ImageProject
         {
 
             private ImageServer m_imageServer;          // The Image Server
-            private IImageServiceModal modal;
+            private IImageServiceModel model;
             private IImageController controller;
             private ILoggingService logging;
 

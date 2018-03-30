@@ -2,6 +2,7 @@
 using ImageService.Infrastructure;
 using ImageService.Infrastructure.Enums;
 using ImageService.Modal;
+using ImageService.Model;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,20 +13,24 @@ namespace ImageService.Controller
 {
     public class ImageController : IImageController
     {
-        private IImageServiceModal m_modal;                      // The Modal Object
+        private IImageServiceModel m_model;                      // The Modal Object
         private Dictionary<int, ICommand> commands;
 
-        public ImageController(IImageServiceModal modal)
+        public ImageController(IImageServiceModel model)
         {
-            m_modal = modal;                    // Storing the Modal Of The System
-            commands = new Dictionary<int, ICommand>()
+            m_model = model;                    // Storing the Modal Of The System
+            commands = new Dictionary<int, ICommand>
             {
-				// For Now will contain NEW_FILE_COMMAND
+                { 0, new NewFileCommand(m_model) }
             };
+
         }
+
+
         public string ExecuteCommand(int commandID, string[] args, out bool resultSuccesful)
         {
-           // Write Code Here
+            return commands[commandID].Execute(args, out resultSuccesful); 
         }
     }
 }
+

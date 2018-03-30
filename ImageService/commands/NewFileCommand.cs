@@ -1,5 +1,6 @@
 ﻿using ImageService.Infrastructure;
 using ImageService.Modal;
+using ImageService.Model;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,11 +11,11 @@ namespace ImageService.Commands
 {
     public class NewFileCommand : ICommand
     {
-        private IImageServiceModal m_modal;
+        private IImageServiceModel m_model;
 
-        public NewFileCommand(IImageServiceModal modal)
+        public NewFileCommand(IImageServiceModel model)
         {
-            m_modal = modal;            // Storing the Modal
+            m_model = model;            // Storing the Modal
         }
 
         public string Execute(string[] args, out bool result)
