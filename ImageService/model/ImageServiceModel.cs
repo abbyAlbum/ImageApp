@@ -55,7 +55,11 @@ namespace ImageService.Model
 
         public void MakeTumb(string path_to_pic, string dst)
         {
-
+            Image image = Image.FromFile(path_to_pic);
+            Image thumb = image.GetThumbnailImage(m_thumbnailSize, m_thumbnailSize, () => false, IntPtr.Zero);
+            //thumb.Save(Path.ChangeExtension(path_to_pic, "thumb"));
+            thumb.Save(dst);
+            
         }
 
         //we init this once so that if the function is repeatedly called

@@ -1,4 +1,5 @@
-﻿using ImageService.Modal;
+﻿using ImageService.Infrastructure.Enums;
+using ImageService.Modal;
 using System;
 using System.IO;
 
@@ -40,7 +41,13 @@ namespace ImageService.Controller.Handlers
 
         void IDirectoryHandler.OnCommandRecieved(object sender, CommandRecievedEventArgs e)
         {
-            
+            if (e.CommandID == (int)CommandEnum.CloseCommand) closeHandler();
+            m_controller.ExecuteCommand(e.CommandID, e.Args, out bool result); // why object sender? its "*"
+        }
+
+        void closeHandler()
+        {
+           this.m_dirWatcher.
         }
 
         void IDirectoryHandler.StartHandleDirectory(string dirPath)
@@ -50,6 +57,13 @@ namespace ImageService.Controller.Handlers
             m_dirWatcher.Filter = "*.pmg";
             m_dirWatcher.Filter = "*.gif";
             m_dirWatcher.Filter = "*.bmp";
+
+            string[] args = { dirPath };
+
+            string msg = m_controller.ExecuteCommand(0, args, out bool result);
+
+            if (result == true) m_logging.Log(msg, Logging.Modal.MessageTypeEnum.INFO); //when to use warning?
+            else m_logging.Log(msg, Logging.Modal.MessageTypeEnum.FAIL);
         }
 
         // Implement Here!
