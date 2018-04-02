@@ -31,10 +31,10 @@ namespace ImageService.Model
                     di.Attributes = FileAttributes.Directory | FileAttributes.Hidden;
                     DirectoryInfo sub_years = di.CreateSubdirectory("Years");
                     DirectoryInfo sub_Thumb = di.CreateSubdirectory("Thumbnails");
-                    
+
                 }
             }
-            if(!Directory.Exists(path))
+            if (!Directory.Exists(path))
             {
                 result = false;
                 return "path not valid!";
@@ -44,7 +44,7 @@ namespace ImageService.Model
             string dst = FindFolder(date, paths[0]);
             string dst2 = FindFolder(date, paths[1]);
 
-            MakeTumb(path,dst2);
+            MakeTumb(path, dst2);
             MoveFile(path, dst);
 
             result = true;

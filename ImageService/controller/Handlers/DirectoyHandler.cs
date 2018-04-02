@@ -62,8 +62,8 @@ namespace ImageService.Controller.Handlers
 
             string msg = m_controller.ExecuteCommand(0, args, out bool result);
 
-            if (result == true) m_logging.Log(msg, Logging.Modal.MessageTypeEnum.INFO); //when to use warning?
-            else m_logging.Log(msg, Logging.Modal.MessageTypeEnum.FAIL);
+            //if (result == true) m_logging.Log(msg, Logging.Modal.MessageTypeEnum.INFO); //when to use warning?
+            //else m_logging.Log(msg, Logging.Modal.MessageTypeEnum.FAIL);
         }
 
         // Implement Here!

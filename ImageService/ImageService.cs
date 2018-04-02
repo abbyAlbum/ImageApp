@@ -73,16 +73,19 @@ namespace ImageProject
                 logging = new LoggingModal();
                 model = new ImageServiceModel(ConfigurationManager.AppSettings["OutputDir"], Int32.Parse(ConfigurationManager.AppSettings["ThumbnailSize"]));
                 controller = new ImageController(model);
-                m_imageServer = new ImageServer();
+                m_imageServer = new ImageServer(controller, logging);
                 m_imageServer.CreateHandler(ConfigurationManager.AppSettings["Handler"]);
                 logging.MessageRecieved += OnMsg;
                 serviceStatus.dwCurrentState = ServiceState.SERVICE_START_PENDING;
                 serviceStatus.dwWaitHint = 100000;
 
-                eventLog1.WriteEntry("In OnStart");
+                eventLog1.WriteEntry(ServiceState.SERVICE_RUNNING.ToString());
+
+                
 
                 // Update the service state to Running.  
                 serviceStatus.dwCurrentState = ServiceState.SERVICE_RUNNING;
+                
             }
 
             protected override void OnStop()

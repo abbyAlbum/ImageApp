@@ -20,15 +20,26 @@ namespace ImageService.Server
         private Dictionary<int, CommandEnum> commands;
         #endregion
 
+
         #region Properties
         public event EventHandler<CommandRecievedEventArgs> CommandRecieved;          // The event that notifies about a new Command being recieved
         #endregion
+
+        public ImageServer(IImageController image, ILoggingService logging)
+        {
+            m_controller = image;
+            m_logging = logging;
+            commands = new Dictionary<int, CommandEnum> { };
+            commands.Add(0, CommandEnum.CloseCommand);
+        }
        
         public void CreateHandler(string path)
         {
             IDirectoryHandler h = new DirectoyHandler(m_controller, m_logging, path);
+            
             CommandRecieved += h.OnCommandRecieved;
-            h.DirectoryClose += OnCloseServer;
+            //h.DirectoryClose += OnCloseServer;
+            h.StartHandleDirectory(path);
         }
 
         public void OnCloseServer(Object sender, DirectoryCloseEventArgs args)
