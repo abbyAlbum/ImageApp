@@ -14,6 +14,7 @@ using ImageService.Modal;
 using ImageService.Controller;
 using ImageService.ImageService_Logging.Model;
 using ImageService.Model;
+using System.Configuration;
 
 namespace ImageProject
 {
@@ -52,16 +53,9 @@ namespace ImageProject
             public ImageService(string[] args)
             {
                 InitializeComponent();
-                string eventSourceName = "MySource";
-                string logName = "MyNewLog";
-                if (args.Count() > 0)
-                {
-                    eventSourceName = args[0];
-                }
-                if (args.Count() > 1)
-                {
-                    logName = args[1];
-                }
+                string eventSourceName = ConfigurationManager.AppSettings["SourceName"];
+                string logName = ConfigurationManager.AppSettings["LogName"];
+
                 eventLog1 = new System.Diagnostics.EventLog();
                 if (!System.Diagnostics.EventLog.SourceExists(eventSourceName))
                 {
@@ -77,6 +71,10 @@ namespace ImageProject
                 // Update the service state to Start Pending.  
                 ServiceStatus serviceStatus = new ServiceStatus();
                 logging = new LoggingModal();
+                model = new ImageServiceModel(ConfigurationManager.AppSettings["OutputDir"], Int32.Parse(ConfigurationManager.AppSettings["ThumbnailSize"]));
+                controller = new ImageController(model);
+                m_imageServer = new ImageServer();
+                m_imageServer.CreateHandler(ConfigurationManager.AppSettings["Handler"]);
                 logging.MessageRecieved += OnMsg;
                 serviceStatus.dwCurrentState = ServiceState.SERVICE_START_PENDING;
                 serviceStatus.dwWaitHint = 100000;

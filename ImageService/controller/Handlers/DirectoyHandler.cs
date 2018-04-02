@@ -47,7 +47,7 @@ namespace ImageService.Controller.Handlers
 
         void closeHandler()
         {
-           this.m_dirWatcher.
+          
         }
 
         void IDirectoryHandler.StartHandleDirectory(string dirPath)
