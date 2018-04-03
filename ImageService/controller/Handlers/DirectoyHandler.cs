@@ -54,17 +54,25 @@ namespace ImageService.Controller.Handlers
         public void StartHandleDirectory(string dirPath)
         {
             m_dirWatcher.Path = dirPath;
-            m_dirWatcher.Filter = "*.*";
+            //m_dirWatcher.Filter = "*.*";
 
-            m_dirWatcher.NotifyFilter = NotifyFilters.LastWrite;
+            m_dirWatcher.NotifyFilter = NotifyFilters.Attributes |
+                                        NotifyFilters.CreationTime |
+             NotifyFilters.FileName |
+             NotifyFilters.LastAccess |
+             NotifyFilters.LastWrite |
+             NotifyFilters.Size |
+             NotifyFilters.Security;
             m_dirWatcher.Changed += new FileSystemEventHandler(OnChanged);
+            m_dirWatcher.Created += new FileSystemEventHandler(OnChanged);
             m_dirWatcher.EnableRaisingEvents = true;
-            m_logging.Log("got here", Logging.Modal.MessageTypeEnum.INFO);
+            m_logging.Log(dirPath, Logging.Modal.MessageTypeEnum.INFO);
 
         }
 
         private void OnChanged(object source, FileSystemEventArgs e)
         {
+            m_logging.Log("yay", Logging.Modal.MessageTypeEnum.INFO);
             string strFileExt = Path.GetExtension(e.FullPath);
 
             // filter file types 

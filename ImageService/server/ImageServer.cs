@@ -39,7 +39,6 @@ namespace ImageService.Server
             
             CommandRecieved += h.OnCommandRecieved;
             //h.DirectoryClose += OnCloseServer;
-            h.StartHandleDirectory(path);
         }
 
         public void OnCloseServer(Object sender, DirectoryCloseEventArgs args)
