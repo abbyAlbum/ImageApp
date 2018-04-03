@@ -72,20 +72,20 @@ namespace ImageService.Controller.Handlers
 
         private void OnChanged(object source, FileSystemEventArgs e)
         {
-            m_logging.Log("yay", Logging.Modal.MessageTypeEnum.INFO);
+            
             string strFileExt = Path.GetExtension(e.FullPath);
+            m_logging.Log(strFileExt, Logging.Modal.MessageTypeEnum.INFO);
 
             // filter file types 
-            if (Regex.IsMatch(strFileExt, @"\.jpg)|\.pmg|\.gif|\.bmp", RegexOptions.IgnoreCase))
+            if (strFileExt.Equals(".jpg") || strFileExt.Equals(".pmg") || strFileExt.Equals(".gif") || strFileExt.Equals(".bmp"))
             {
+                m_logging.Log(strFileExt, Logging.Modal.MessageTypeEnum.INFO);
                 string[] args = { e.FullPath };
 
                 string msg = m_controller.ExecuteCommand((int)CommandEnum.NewFileCommand, args, out bool result);
 
                 if (result == true) m_logging.Log(msg, Logging.Modal.MessageTypeEnum.INFO); //when to use warning?
                 else m_logging.Log(msg, Logging.Modal.MessageTypeEnum.FAIL);
-
-                
 
 
             }

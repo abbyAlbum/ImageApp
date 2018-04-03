@@ -22,24 +22,20 @@ namespace ImageService.Model
 
         public string AddFile(string path, out bool result)
         {
-            if (m_OutputFolder == null)
-            {
-                string path1 = @"C:\OutputDir"; // or whatever 
-                if (!Directory.Exists(path1))
-                {
-                    DirectoryInfo di = Directory.CreateDirectory(path1);
-                    di.Attributes = FileAttributes.Directory | FileAttributes.Hidden;
-                    DirectoryInfo sub_years = di.CreateSubdirectory("Years");
-                    DirectoryInfo sub_Thumb = di.CreateSubdirectory("Thumbnails");
+            DirectoryInfo output = new DirectoryInfo(m_OutputFolder);
 
-                }
-            }
-            if (!Directory.Exists(path))
+            DirectoryInfo desktop = Directory.CreateDirectory(m_OutputFolder);
+            DirectoryInfo di = desktop.CreateSubdirectory("OutputDir");
+            //di.Attributes = FileAttributes.Directory | FileAttributes.Hidden;
+            DirectoryInfo sub_years = di.CreateSubdirectory("Years");
+            DirectoryInfo sub_Thumb = di.CreateSubdirectory("Thumbnails");
+            
+            /*if (!Directory.Exists(path))
             {
                 result = false;
                 return "path not valid!";
-            }
-            string[] paths = Directory.GetDirectories(m_OutputFolder);
+            }*/
+            string[] paths = Directory.GetDirectories(di.FullName);
             DateTime date = GetDateTakenFromImage(path);
             if (date == DateTime.MinValue)
             {
@@ -49,8 +45,9 @@ namespace ImageService.Model
             string dst = FindFolder(date, paths[0]);
             string dst2 = FindFolder(date, paths[1]);
 
-            MakeTumb(path, dst2);
-            MoveFile(path, dst);
+            MoveFile(path, dst2);
+            MakeTumb(path, dst);
+            
 
             result = true;
 
@@ -60,11 +57,11 @@ namespace ImageService.Model
 
         public void MakeTumb(string path_to_pic, string dst)
         {
+            string name = Path.GetFileName(path_to_pic);
             Image image = Image.FromFile(path_to_pic);
             Image thumb = image.GetThumbnailImage(m_thumbnailSize, m_thumbnailSize, () => false, IntPtr.Zero);
-            //thumb.Save(Path.ChangeExtension(path_to_pic, "thumb"));
-            thumb.Save(dst);
-            
+            thumb.Save(Path.ChangeExtension());
+
         }
 
         //we init this once so that if the function is repeatedly called
@@ -88,11 +85,12 @@ namespace ImageService.Model
                 sdate = firsthalf + secondhalf;
                 dtaken = DateTime.Parse(sdate);
                 return dtaken;
-            } catch (Exception e)
+            }
+            catch (Exception e)
             {
                 return new DateTime();
             }
-            
+
         }
 
         public string FindFolder(DateTime date, string path)
@@ -105,14 +103,14 @@ namespace ImageService.Model
             string year_path = path + sep_char + pic_year.ToString();
             string month_path = year_path + sep_char + pic_month.ToString();
 
-            if(!Directory.Exists(year_path))
+            if (!Directory.Exists(year_path))
             {
-                year_path = CreateFolder(pic_year.ToString(), path);
-                return CreateFolder(pic_month.ToString(), year_path);
+                Directory.CreateDirectory(month_path);
+                return month_path;
             }
-            if(!Directory.Exists(month_path))
+            if (!Directory.Exists(month_path))
             {
-                return CreateFolder(pic_month.ToString(), year_path);
+                
             }
             return month_path;
 
@@ -140,19 +138,11 @@ namespace ImageService.Model
             return pathString;
         }
 
-        public void MoveFile(string curDir, string dstDir)
+        public void MoveFile(string curDir, string dst2)
         {
-           // string curPathString = Path.Combine(curDir, fileName);
-           // string dstPathString = Path.Combine(dstDir, fileName);
-
-            /*if (!Directory.Exists(dstPathString))
-            {
-                Directory.CreateDirectory(dstPathString);
-            }*/
-
-            File.Copy(curDir, dstDir, true);
-
-
+            string name = Path.GetFileName(path_to_pic);
+            dst2 = dst2 + Path.DirectorySeparatorChar + name;
+            File.Copy(curDir, dst2);
         }
 
         public void RemoveFile(string pathName)
