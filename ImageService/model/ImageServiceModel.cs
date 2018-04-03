@@ -41,6 +41,11 @@ namespace ImageService.Model
             }
             string[] paths = Directory.GetDirectories(m_OutputFolder);
             DateTime date = GetDateTakenFromImage(path);
+            if (date == DateTime.MinValue)
+            {
+                result = false;
+                return "prob with path";
+            }
             string dst = FindFolder(date, paths[0]);
             string dst2 = FindFolder(date, paths[1]);
 
@@ -69,13 +74,25 @@ namespace ImageService.Model
         //retrieves the datetime WITHOUT loading the whole image
         public static DateTime GetDateTakenFromImage(string path)
         {
-            using (FileStream fs = new FileStream(path, FileMode.Open, FileAccess.Read))
-            using (Image myImage = Image.FromStream(fs, false, false))
+            try
             {
-                PropertyItem propItem = myImage.GetPropertyItem(36867);
-                string dateTaken = r.Replace(Encoding.UTF8.GetString(propItem.Value), "-", 2);
-                return DateTime.Parse(dateTaken);
+                Image myImage = Image.FromFile(path);
+                PropertyItem propItem = myImage.GetPropertyItem(306);
+                DateTime dtaken;
+
+                //Convert date taken metadata to a DateTime object
+                string sdate = Encoding.UTF8.GetString(propItem.Value).Trim();
+                string secondhalf = sdate.Substring(sdate.IndexOf(" "), (sdate.Length - sdate.IndexOf(" ")));
+                string firsthalf = sdate.Substring(0, 10);
+                firsthalf = firsthalf.Replace(":", "-");
+                sdate = firsthalf + secondhalf;
+                dtaken = DateTime.Parse(sdate);
+                return dtaken;
+            } catch (Exception e)
+            {
+                return new DateTime();
             }
+            
         }
 
         public string FindFolder(DateTime date, string path)

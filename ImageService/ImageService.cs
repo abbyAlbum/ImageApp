@@ -68,18 +68,20 @@ namespace ImageProject
             // Here You will Use the App Config!
             protected override void OnStart(string[] args)
             {
-                // Update the service state to Start Pending.  
+                eventLog1.WriteEntry(ServiceState.SERVICE_RUNNING.ToString());
+                 // Update the service state to Start Pending.  
                 ServiceStatus serviceStatus = new ServiceStatus();
                 logging = new LoggingModal();
+                logging.MessageRecieved += OnMsg;
                 model = new ImageServiceModel(ConfigurationManager.AppSettings["OutputDir"], Int32.Parse(ConfigurationManager.AppSettings["ThumbnailSize"]));
                 controller = new ImageController(model);
                 m_imageServer = new ImageServer(controller, logging);
                 m_imageServer.CreateHandler(ConfigurationManager.AppSettings["Handler"]);
-                logging.MessageRecieved += OnMsg;
+                
                 serviceStatus.dwCurrentState = ServiceState.SERVICE_START_PENDING;
                 serviceStatus.dwWaitHint = 100000;
 
-                eventLog1.WriteEntry(ServiceState.SERVICE_RUNNING.ToString());
+                
 
                 
 

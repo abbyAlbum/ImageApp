@@ -2,7 +2,7 @@
 using ImageService.Modal;
 using System;
 using System.IO;
-
+using System.Text.RegularExpressions;
 
 namespace ImageService.Controller.Handlers
 {
@@ -22,7 +22,8 @@ namespace ImageService.Controller.Handlers
             this.m_controller = m_controller;
             this.m_logging = m_logging;
             this.m_path = m_path;
-            this.m_dirWatcher = new FileSystemWatcher(m_path);
+            this.m_dirWatcher = new FileSystemWatcher();
+            StartHandleDirectory(m_path);
         }
 
 
@@ -39,7 +40,7 @@ namespace ImageService.Controller.Handlers
             }
         }
 
-        void IDirectoryHandler.OnCommandRecieved(object sender, CommandRecievedEventArgs e)
+        public void OnCommandRecieved(object sender, CommandRecievedEventArgs e)
         {
             if (e.CommandID == (int)CommandEnum.CloseCommand) closeHandler();
             m_controller.ExecuteCommand(e.CommandID, e.Args, out bool result); // why object sender? its "*"
@@ -50,20 +51,36 @@ namespace ImageService.Controller.Handlers
           
         }
 
-        void IDirectoryHandler.StartHandleDirectory(string dirPath)
+        public void StartHandleDirectory(string dirPath)
         {
             m_dirWatcher.Path = dirPath;
-            m_dirWatcher.Filter = "*.jpg";
-            m_dirWatcher.Filter = "*.pmg";
-            m_dirWatcher.Filter = "*.gif";
-            m_dirWatcher.Filter = "*.bmp";
+            m_dirWatcher.Filter = "*.*";
 
-            string[] args = { dirPath };
+            m_dirWatcher.NotifyFilter = NotifyFilters.LastWrite;
+            m_dirWatcher.Changed += new FileSystemEventHandler(OnChanged);
+            m_dirWatcher.EnableRaisingEvents = true;
+            m_logging.Log("got here", Logging.Modal.MessageTypeEnum.INFO);
 
-            string msg = m_controller.ExecuteCommand(0, args, out bool result);
+        }
 
-            //if (result == true) m_logging.Log(msg, Logging.Modal.MessageTypeEnum.INFO); //when to use warning?
-            //else m_logging.Log(msg, Logging.Modal.MessageTypeEnum.FAIL);
+        private void OnChanged(object source, FileSystemEventArgs e)
+        {
+            string strFileExt = Path.GetExtension(e.FullPath);
+
+            // filter file types 
+            if (Regex.IsMatch(strFileExt, @"\.jpg)|\.pmg|\.gif|\.bmp", RegexOptions.IgnoreCase))
+            {
+                string[] args = { e.FullPath };
+
+                string msg = m_controller.ExecuteCommand((int)CommandEnum.NewFileCommand, args, out bool result);
+
+                if (result == true) m_logging.Log(msg, Logging.Modal.MessageTypeEnum.INFO); //when to use warning?
+                else m_logging.Log(msg, Logging.Modal.MessageTypeEnum.FAIL);
+
+                
+
+
+            }
         }
 
         // Implement Here!
