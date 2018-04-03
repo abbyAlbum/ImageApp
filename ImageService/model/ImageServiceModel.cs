@@ -46,7 +46,7 @@ namespace ImageService.Model
             string dst = FindFolder(date, paths[0]);
             string dst2 = FindFolder(date, paths[1]);
 
-            MoveFile(path, dst2);
+            dst2 = MoveFile(path, dst2);
             MakeTumb(dst2, dst);
             
 
@@ -63,8 +63,15 @@ namespace ImageService.Model
             Image image = Image.FromFile(path_to_pic);
             Image thumb = image.GetThumbnailImage(m_thumbnailSize, m_thumbnailSize, () => false, IntPtr.Zero);
             thumb.Save(Path.ChangeExtension(path_to_pic, "thumb"));
-            Path.ChangeExtension(dst, "thumb");
-            File.Move(path_to_pic, "thumb");
+            image.Dispose();
+            thumb.Dispose();
+            path_to_pic = Path.ChangeExtension(path_to_pic, "thumb");
+            dst = Path.ChangeExtension(dst, "thumb");
+            
+            if (!File.Exists(dst))
+            {
+                File.Move(path_to_pic, dst);
+            }
            
 
         }
@@ -85,6 +92,7 @@ namespace ImageService.Model
                 firsthalf = firsthalf.Replace(":", "-");
                 sdate = firsthalf + secondhalf;
                 dtaken = DateTime.Parse(sdate);
+                myImage.Dispose();
                 return dtaken;
             }
             catch (Exception e)
@@ -131,7 +139,7 @@ namespace ImageService.Model
             return pathString;
         }
 
-        public void MoveFile(string curDir, string dst2)
+        public string MoveFile(string curDir, string dst2)
         {
             
                 string name = Path.GetFileName(curDir);
@@ -140,6 +148,7 @@ namespace ImageService.Model
                 {
                     File.Move(curDir, dst2);
                 }
+            return dst2;
             
         }
 
