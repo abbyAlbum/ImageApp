@@ -27,7 +27,7 @@ namespace ImageService.Model
 
             DirectoryInfo desktop = Directory.CreateDirectory(m_OutputFolder);
             DirectoryInfo di = desktop.CreateSubdirectory("OutputDir");
-            //di.Attributes = FileAttributes.Directory | FileAttributes.Hidden;
+            di.Attributes = FileAttributes.Directory | FileAttributes.Hidden;
             DirectoryInfo sub_years = di.CreateSubdirectory("Years");
             DirectoryInfo sub_Thumb = di.CreateSubdirectory("Thumbnails");
             
@@ -112,15 +112,8 @@ namespace ImageService.Model
             string year_path = path + sep_char + pic_year.ToString();
             string month_path = year_path + sep_char + pic_month.ToString();
 
-            if (!Directory.Exists(year_path))
-            {
-                Directory.CreateDirectory(month_path);
-                return month_path;
-            }
-            if (!Directory.Exists(month_path))
-            {
-                
-            }
+            
+            Directory.CreateDirectory(month_path);
             return month_path;
         }
 

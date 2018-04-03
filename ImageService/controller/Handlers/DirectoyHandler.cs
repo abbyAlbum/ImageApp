@@ -63,10 +63,9 @@ namespace ImageService.Controller.Handlers
              NotifyFilters.LastWrite |
              NotifyFilters.Size |
              NotifyFilters.Security;
-            m_dirWatcher.Changed += new FileSystemEventHandler(OnChanged);
+            //m_dirWatcher.Changed += new FileSystemEventHandler(OnChanged);
             m_dirWatcher.Created += new FileSystemEventHandler(OnChanged);
             m_dirWatcher.EnableRaisingEvents = true;
-            m_logging.Log(dirPath, Logging.Modal.MessageTypeEnum.INFO);
 
         }
 
@@ -74,12 +73,10 @@ namespace ImageService.Controller.Handlers
         {
             
             string strFileExt = Path.GetExtension(e.FullPath);
-            m_logging.Log(strFileExt, Logging.Modal.MessageTypeEnum.INFO);
 
             // filter file types 
             if (strFileExt.Equals(".jpg") || strFileExt.Equals(".pmg") || strFileExt.Equals(".gif") || strFileExt.Equals(".bmp"))
             {
-                m_logging.Log(strFileExt, Logging.Modal.MessageTypeEnum.INFO);
                 string[] args = { e.FullPath };
 
                 string msg = m_controller.ExecuteCommand((int)CommandEnum.NewFileCommand, args, out bool result);
