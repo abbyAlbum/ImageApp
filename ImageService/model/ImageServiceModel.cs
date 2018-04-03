@@ -4,6 +4,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Drawing;
 using System.Drawing.Imaging;
+using System.Drawing.Drawing2D;
 
 namespace ImageService.Model
 {
@@ -46,7 +47,7 @@ namespace ImageService.Model
             string dst2 = FindFolder(date, paths[1]);
 
             MoveFile(path, dst2);
-            MakeTumb(path, dst);
+            MakeTumb(dst2, dst);
             
 
             result = true;
@@ -58,15 +59,15 @@ namespace ImageService.Model
         public void MakeTumb(string path_to_pic, string dst)
         {
             string name = Path.GetFileName(path_to_pic);
+            dst = dst + Path.DirectorySeparatorChar + name;
             Image image = Image.FromFile(path_to_pic);
             Image thumb = image.GetThumbnailImage(m_thumbnailSize, m_thumbnailSize, () => false, IntPtr.Zero);
-            thumb.Save(Path.ChangeExtension());
+            thumb.Save(Path.ChangeExtension(path_to_pic, "thumb"));
+            Path.ChangeExtension(dst, "thumb");
+            File.Move(path_to_pic, "thumb");
+           
 
         }
-
-        //we init this once so that if the function is repeatedly called
-        //it isn't stressing the garbage man
-        private static Regex r = new Regex(":");
 
         //retrieves the datetime WITHOUT loading the whole image
         public static DateTime GetDateTakenFromImage(string path)
@@ -113,14 +114,6 @@ namespace ImageService.Model
                 
             }
             return month_path;
-
-            /*string month = GetDate(path, out string year);
-            string pathYear = path + Path.DirectorySeparatorChar + year;
-            string pathMonth = pathYear + Path.DirectorySeparatorChar + month;
-
-            if (Directory.Exists(pathMonth)) return pathMonth;
-            if (Directory.Exists(pathYear)) return pathYear;
-            return pathMonth;*/
         }
 
         public string GetDate(string path, out string year)
@@ -140,9 +133,14 @@ namespace ImageService.Model
 
         public void MoveFile(string curDir, string dst2)
         {
-            string name = Path.GetFileName(path_to_pic);
-            dst2 = dst2 + Path.DirectorySeparatorChar + name;
-            File.Copy(curDir, dst2);
+            
+                string name = Path.GetFileName(curDir);
+                dst2 = dst2 + Path.DirectorySeparatorChar + name;
+                if (!File.Exists(dst2))
+                {
+                    File.Move(curDir, dst2);
+                }
+            
         }
 
         public void RemoveFile(string pathName)
