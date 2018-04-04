@@ -116,22 +116,7 @@ namespace ImageService.Model
             Directory.CreateDirectory(month_path);
             return month_path;
         }
-
-        public string GetDate(string path, out string year)
-        {
-
-            string[] words = path.Split(Path.DirectorySeparatorChar);
-            year = words[words.Length - 1];
-            return words[words.Length];
-        }
-
-        public string CreateFolder(string fileName, string path)
-        {
-            string pathString = Path.Combine(path, fileName);
-
-            return pathString;
-        }
-
+      
         public string MoveFile(string curDir, string dst2)
         {
             
@@ -185,4 +170,19 @@ namespace ImageService.Model
             else
             {
                 Console.WriteLine("Source path does not exist!");
-            }*/
+            }
+              public string CreateFolder(string fileName, string path)
+        {
+            string pathString = Path.Combine(path, fileName);
+
+            return pathString;
+        }
+
+         public string GetDate(string path, out string year)
+        {
+
+            string[] words = path.Split(Path.DirectorySeparatorChar);
+            year = words[words.Length - 1];
+            return words[words.Length];
+        }
+*/
