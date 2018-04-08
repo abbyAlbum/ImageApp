@@ -24,7 +24,6 @@ namespace ImageService.Model
         public string AddFile(string path, out bool result)
         {
             DirectoryInfo output = new DirectoryInfo(m_OutputFolder);
-
             DirectoryInfo desktop = Directory.CreateDirectory(m_OutputFolder);
             DirectoryInfo di = desktop.CreateSubdirectory("OutputDir");
             di.Attributes = FileAttributes.Directory | FileAttributes.Hidden;

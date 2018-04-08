@@ -56,10 +56,10 @@ namespace ImageProject
                 string eventSourceName = ConfigurationManager.AppSettings["SourceName"];
                 string logName = ConfigurationManager.AppSettings["LogName"];
 
-                eventLog1 = new System.Diagnostics.EventLog();
-                if (!System.Diagnostics.EventLog.SourceExists(eventSourceName))
+                eventLog1 = new EventLog();
+                if (!EventLog.SourceExists(eventSourceName))
                 {
-                    System.Diagnostics.EventLog.CreateEventSource(eventSourceName, logName);
+                    EventLog.CreateEventSource(eventSourceName, logName);
                 }
                 eventLog1.Source = eventSourceName;
                 eventLog1.Log = logName;
