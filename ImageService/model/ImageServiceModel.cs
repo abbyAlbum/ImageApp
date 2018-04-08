@@ -29,7 +29,7 @@ namespace ImageService.Model
             di.Attributes = FileAttributes.Directory | FileAttributes.Hidden;
             DirectoryInfo sub_years = di.CreateSubdirectory("Years");
             DirectoryInfo sub_Thumb = di.CreateSubdirectory("Thumbnails");
-            
+
             /*if (!Directory.Exists(path))
             {
                 result = false;
@@ -45,9 +45,10 @@ namespace ImageService.Model
             string dst = FindFolder(date, paths[0]);
             string dst2 = FindFolder(date, paths[1]);
 
-            dst2 = MoveFile(path, dst2);
+            dst2 = MoveFile(path, dst2, out result);
+            if (result == false) return dst2;
             MakeTumb(dst2, dst);
-            
+
 
             result = true;
 
@@ -66,12 +67,12 @@ namespace ImageService.Model
             thumb.Dispose();
             path_to_pic = Path.ChangeExtension(path_to_pic, "thumb");
             dst = Path.ChangeExtension(dst, "thumb");
-            
+
             if (!File.Exists(dst))
             {
                 File.Move(path_to_pic, dst);
             }
-           
+
 
         }
 
@@ -111,22 +112,43 @@ namespace ImageService.Model
             string year_path = path + sep_char + pic_year.ToString();
             string month_path = year_path + sep_char + pic_month.ToString();
 
-            
+
             Directory.CreateDirectory(month_path);
             return month_path;
         }
-      
-        public string MoveFile(string curDir, string dst2)
+
+        public string MoveFile(string curDir, string dst2, out bool result)
         {
-            
-                string name = Path.GetFileName(curDir);
-                dst2 = dst2 + Path.DirectorySeparatorChar + name;
-                if (!File.Exists(dst2))
+
+            string name = Path.GetFileName(curDir);
+            string dst4 = dst2 + Path.DirectorySeparatorChar + name;
+            if (File.Exists(dst4))
+            {
+                int num = 1;
+                string name1 = Path.GetFileNameWithoutExtension(curDir);
+                string ext = Path.GetExtension(curDir);
+                dst4 = dst2 + Path.DirectorySeparatorChar + name1 + num.ToString() + ext;
+                while (File.Exists(dst4))
                 {
-                    File.Move(curDir, dst2);
+                    num++;
+                    dst4 = dst2 + Path.DirectorySeparatorChar + name1 + num.ToString() + ext;
                 }
-            return dst2;
+            }
+                
+                try
+                {
+                    File.Move(curDir, dst4);
+                }
+                catch (Exception e)
+                {
+                    result = false;
+                    return e.ToString();
+                }
             
+           
+            result = true;
+            return dst4;
+
         }
 
         public void RemoveFile(string pathName)

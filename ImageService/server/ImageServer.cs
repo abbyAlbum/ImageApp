@@ -38,7 +38,7 @@ namespace ImageService.Server
             IDirectoryHandler h = new DirectoyHandler(m_controller, m_logging, path);
             
             CommandRecieved += h.OnCommandRecieved;
-            //h.DirectoryClose += OnCloseServer;
+            h.DirectoryClose += OnCloseServer;
         }
 
         public void OnCloseServer(Object sender, DirectoryCloseEventArgs args)

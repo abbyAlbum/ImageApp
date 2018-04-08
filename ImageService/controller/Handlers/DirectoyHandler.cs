@@ -27,19 +27,6 @@ namespace ImageService.Controller.Handlers
         }
 
 
-        event EventHandler<DirectoryCloseEventArgs> IDirectoryHandler.DirectoryClose
-        {
-            add
-            {
-                throw new NotImplementedException();
-            }
-
-            remove
-            {
-                throw new NotImplementedException();
-            }
-        }
-
         public void OnCommandRecieved(object sender, CommandRecievedEventArgs e)
         {
             if (e.CommandID == (int)CommandEnum.CloseCommand) CloseHandler();
@@ -48,7 +35,13 @@ namespace ImageService.Controller.Handlers
 
         void CloseHandler()
         {
-            m_dirWatcher.EnableRaisingEvents = false;
+            try
+            {
+                m_dirWatcher.EnableRaisingEvents = false;
+            } catch(Exception e)
+            {
+                m_logging.Log(e.ToString(), Logging.Modal.MessageTypeEnum.FAIL);
+            }
         }
 
         public void StartHandleDirectory(string dirPath)
@@ -71,7 +64,7 @@ namespace ImageService.Controller.Handlers
 
         private void OnChanged(object source, FileSystemEventArgs e)
         {
-            
+            while (IsFileLocked(new FileInfo(e.FullPath)));
             string strFileExt = Path.GetExtension(e.FullPath);
 
             // filter file types 
@@ -88,6 +81,31 @@ namespace ImageService.Controller.Handlers
             }
         }
 
-        // Implement Here!
+        private bool IsFileLocked(FileInfo file)
+        {
+            FileStream stream = null;
+
+            try
+            {
+                stream = file.Open(FileMode.Open, FileAccess.ReadWrite, FileShare.None);
+            }
+            catch (IOException)
+            {
+                //the file is unavailable because it is:
+                //still being written to
+                //or being processed by another thread
+                //or does not exist (has already been processed)
+                return true;
+            }
+            finally
+            {
+                if (stream != null)
+                    stream.Close();
+            }
+
+            //file is not locked
+            return false;
+        }
+
     }
 }
