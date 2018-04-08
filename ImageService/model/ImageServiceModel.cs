@@ -30,54 +30,52 @@ namespace ImageService.Model
             DirectoryInfo sub_years = di.CreateSubdirectory("Years");
             DirectoryInfo sub_Thumb = di.CreateSubdirectory("Thumbnails");
 
-            /*if (!Directory.Exists(path))
-            {
-                result = false;
-                return "path not valid!";
-            }*/
             string[] paths = Directory.GetDirectories(di.FullName);
-            DateTime date = GetDateTakenFromImage(path);
+            DateTime date = GetDateTakenFromImage(path, out string prob);
             if (date == DateTime.MinValue)
             {
                 result = false;
-                return "prob with path";
+                return prob;
             }
             string dst = FindFolder(date, paths[0]);
             string dst2 = FindFolder(date, paths[1]);
 
             dst2 = MoveFile(path, dst2, out result);
             if (result == false) return dst2;
-            MakeTumb(dst2, dst);
-
-
-            result = true;
-
-            return "noError";
+            return MakeTumb(dst2, dst, out result);
 
         }
 
-        public void MakeTumb(string path_to_pic, string dst)
+        public string MakeTumb(string path_to_pic, string dst, out bool result)
         {
-            string name = Path.GetFileName(path_to_pic);
-            dst = dst + Path.DirectorySeparatorChar + name;
-            Image image = Image.FromFile(path_to_pic);
-            Image thumb = image.GetThumbnailImage(m_thumbnailSize, m_thumbnailSize, () => false, IntPtr.Zero);
-            thumb.Save(Path.ChangeExtension(path_to_pic, "thumb"));
-            image.Dispose();
-            thumb.Dispose();
-            path_to_pic = Path.ChangeExtension(path_to_pic, "thumb");
-            dst = Path.ChangeExtension(dst, "thumb");
-
-            if (!File.Exists(dst))
+            try
             {
-                File.Move(path_to_pic, dst);
+                string name = Path.GetFileName(path_to_pic);
+                dst = dst + Path.DirectorySeparatorChar + name;
+                Image image = Image.FromFile(path_to_pic);
+                Image thumb = image.GetThumbnailImage(m_thumbnailSize, m_thumbnailSize, () => false, IntPtr.Zero);
+                thumb.Save(Path.ChangeExtension(path_to_pic, "thumb"));
+                image.Dispose();
+                thumb.Dispose();
+                path_to_pic = Path.ChangeExtension(path_to_pic, "thumb");
+                dst = Path.ChangeExtension(dst, "thumb");
+
+                if (!File.Exists(dst))
+                {
+                    File.Move(path_to_pic, dst);
+                }
             }
-
-
+            catch (Exception e)
+            {
+                result = false;
+                return e.ToString();
+            }
+            result = true;
+            return "File Added";
         }
 
         //retrieves the datetime WITHOUT loading the whole image
-        public static DateTime GetDateTakenFromImage(string path)
+        public static DateTime GetDateTakenFromImage(string path, out string prob)
         {
             try
             {
@@ -93,10 +91,12 @@ namespace ImageService.Model
                 sdate = firsthalf + secondhalf;
                 dtaken = DateTime.Parse(sdate);
                 myImage.Dispose();
+                prob = "none";
                 return dtaken;
             }
             catch (Exception e)
             {
+                prob = e.ToString();
                 return new DateTime();
             }
 
@@ -134,18 +134,18 @@ namespace ImageService.Model
                     dst4 = dst2 + Path.DirectorySeparatorChar + name1 + num.ToString() + ext;
                 }
             }
-                
-                try
-                {
-                    File.Move(curDir, dst4);
-                }
-                catch (Exception e)
-                {
-                    result = false;
-                    return e.ToString();
-                }
-            
-           
+
+            try
+            {
+                File.Move(curDir, dst4);
+            }
+            catch (Exception e)
+            {
+                result = false;
+                return e.ToString();
+            }
+
+
             result = true;
             return dst4;
 
@@ -175,35 +175,3 @@ namespace ImageService.Model
 
 }
 
-/*if (System.IO.Directory.Exists(curDir))
-            {
-                string[] files = System.IO.Directory.GetFiles(curDir);
-
-                // Copy the files and overwrite destination files if they already exist.
-                foreach (string s in files)
-                {
-                    // Use static Path methods to extract only the file name from the path.
-                    fileName = System.IO.Path.GetFileName(s);
-                    dstPathString = System.IO.Path.Combine(dstPathString, fileName);
-                    System.IO.File.Copy(s, dstPathString, true);
-                }
-            }
-            else
-            {
-                Console.WriteLine("Source path does not exist!");
-            }
-              public string CreateFolder(string fileName, string path)
-        {
-            string pathString = Path.Combine(path, fileName);
-
-            return pathString;
-        }
-
-         public string GetDate(string path, out string year)
-        {
-
-            string[] words = path.Split(Path.DirectorySeparatorChar);
-            year = words[words.Length - 1];
-            return words[words.Length];
-        }
-*/
