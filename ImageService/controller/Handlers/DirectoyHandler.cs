@@ -42,13 +42,13 @@ namespace ImageService.Controller.Handlers
 
         public void OnCommandRecieved(object sender, CommandRecievedEventArgs e)
         {
-            if (e.CommandID == (int)CommandEnum.CloseCommand) closeHandler();
+            if (e.CommandID == (int)CommandEnum.CloseCommand) CloseHandler();
             m_controller.ExecuteCommand(e.CommandID, e.Args, out bool result); // why object sender? its "*"
         }
 
-        void closeHandler()
+        void CloseHandler()
         {
-          
+            m_dirWatcher.EnableRaisingEvents = false;
         }
 
         public void StartHandleDirectory(string dirPath)
