@@ -92,6 +92,7 @@ namespace ImageProject
 
             protected override void OnStop()
             {
+                
                 eventLog1.WriteEntry(ServiceState.SERVICE_STOPPED.ToString());
             }
 

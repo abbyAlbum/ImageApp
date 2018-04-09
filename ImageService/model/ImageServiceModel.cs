@@ -48,11 +48,11 @@ namespace ImageService.Model
 
         public string MakeTumb(string path_to_pic, string dst, out bool result)
         {
+            Image image = Image.FromFile(path_to_pic);
             try
             {
                 string name = Path.GetFileName(path_to_pic);
                 dst = dst + Path.DirectorySeparatorChar + name;
-                Image image = Image.FromFile(path_to_pic);
                 Image thumb = image.GetThumbnailImage(m_thumbnailSize, m_thumbnailSize, () => false, IntPtr.Zero);
                 thumb.Save(Path.ChangeExtension(path_to_pic, "thumb"));
                 image.Dispose();
@@ -67,6 +67,7 @@ namespace ImageService.Model
             }
             catch (Exception e)
             {
+                if(image != null) image.Dispose();
                 result = false;
                 return e.ToString();
             }
@@ -77,9 +78,9 @@ namespace ImageService.Model
         //retrieves the datetime WITHOUT loading the whole image
         public static DateTime GetDateTakenFromImage(string path, out string prob)
         {
+            Image myImage = Image.FromFile(path);
             try
             {
-                Image myImage = Image.FromFile(path);
                 PropertyItem propItem = myImage.GetPropertyItem(306);
                 DateTime dtaken;
 
@@ -96,6 +97,7 @@ namespace ImageService.Model
             }
             catch (Exception e)
             {
+                myImage.Dispose();
                 prob = e.ToString();
                 return new DateTime();
             }
