@@ -52,18 +52,27 @@ namespace ImageService.Model
             try
             {
                 string name = Path.GetFileName(path_to_pic);
-                dst = dst + Path.DirectorySeparatorChar + name;
+                string dst2 = dst + Path.DirectorySeparatorChar + name;
                 Image thumb = image.GetThumbnailImage(m_thumbnailSize, m_thumbnailSize, () => false, IntPtr.Zero);
                 thumb.Save(Path.ChangeExtension(path_to_pic, "thumb"));
                 image.Dispose();
                 thumb.Dispose();
                 path_to_pic = Path.ChangeExtension(path_to_pic, "thumb");
-                dst = Path.ChangeExtension(dst, "thumb");
+                dst2 = Path.ChangeExtension(dst2, "thumb");
 
-                if (!File.Exists(dst))
+                if (File.Exists(dst2))
                 {
-                    File.Move(path_to_pic, dst);
+                    int num = 1;
+                    string name1 = Path.GetFileNameWithoutExtension(dst2);
+                    string ext = Path.GetExtension(dst2);
+                    dst2 = dst + Path.DirectorySeparatorChar + name1 + num.ToString() + ext;
+                    while (File.Exists(dst2))
+                    {
+                        num++;
+                        dst2 = dst + Path.DirectorySeparatorChar + name1 + num.ToString() + ext;
+                    }
                 }
+                File.Move(path_to_pic, dst2);
             }
             catch (Exception e)
             {
@@ -76,7 +85,7 @@ namespace ImageService.Model
         }
 
         //retrieves the datetime WITHOUT loading the whole image
-        public static DateTime GetDateTakenFromImage(string path, out string prob)
+       /* public static DateTime GetDateTakenFromImage(string path, out string prob)
         {
             Image myImage = Image.FromFile(path);
             try
@@ -102,6 +111,30 @@ namespace ImageService.Model
                 return new DateTime();
             }
 
+        }*/
+
+        //we init this once so that if the function is repeatedly called
+        //it isn't stressing the garbage man
+        private static Regex r = new Regex(":");
+
+        //retrieves the datetime WITHOUT loading the whole image
+        public static DateTime GetDateTakenFromImage(string path, out string prob)
+        {
+            try
+            {
+                using (FileStream fs = new FileStream(path, FileMode.Open, FileAccess.Read))
+                using (Image myImage = Image.FromStream(fs, false, false))
+                {
+                    PropertyItem propItem = myImage.GetPropertyItem(36867);
+                    string dateTaken = r.Replace(Encoding.UTF8.GetString(propItem.Value), "-", 2);
+                    prob = "none";
+                    return DateTime.Parse(dateTaken);
+                }
+            } catch(Exception e)
+            {
+                prob = e.ToString();
+                return new DateTime();
+            }
         }
 
         public string FindFolder(DateTime date, string path)
