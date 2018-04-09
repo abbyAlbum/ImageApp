@@ -72,7 +72,8 @@ namespace ImageService.Controller.Handlers
             string strFileExt = Path.GetExtension(e.FullPath);
 
             // filter file types 
-            if (strFileExt.Equals(".jpg") || strFileExt.Equals(".pmg") || strFileExt.Equals(".gif") || strFileExt.Equals(".bmp"))
+            if (strFileExt.Equals(".jpg") || strFileExt.Equals(".png") || strFileExt.Equals(".gif") || strFileExt.Equals(".bmp")
+                || strFileExt.Equals(".JPG") || strFileExt.Equals(".PNG") || strFileExt.Equals(".GIF") || strFileExt.Equals(".BMP"))
             {
                 string[] args = { e.FullPath };
 

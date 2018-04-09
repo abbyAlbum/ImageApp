@@ -41,8 +41,8 @@ namespace ImageService.Model
             string dst2 = FindFolder(date, paths[1]);
 
             dst2 = MoveFile(path, dst2, out result);
-            if (result == false) return dst2;
-            return MakeTumb(dst2, dst, out result);
+            if (result == false) return dst2 + prob;
+            return MakeTumb(dst2, dst, out result) + prob;
 
         }
 
@@ -60,18 +60,8 @@ namespace ImageService.Model
                 path_to_pic = Path.ChangeExtension(path_to_pic, "thumb");
                 dst2 = Path.ChangeExtension(dst2, "thumb");
 
-                if (File.Exists(dst2))
-                {
-                    int num = 1;
-                    string name1 = Path.GetFileNameWithoutExtension(dst2);
-                    string ext = Path.GetExtension(dst2);
-                    dst2 = dst + Path.DirectorySeparatorChar + name1 + num.ToString() + ext;
-                    while (File.Exists(dst2))
-                    {
-                        num++;
-                        dst2 = dst + Path.DirectorySeparatorChar + name1 + num.ToString() + ext;
-                    }
-                }
+                if (File.Exists(dst2)) dst2 = GetUniquePath(dst, dst2);
+              
                 File.Move(path_to_pic, dst2);
             }
             catch (Exception e)
@@ -84,35 +74,21 @@ namespace ImageService.Model
             return "File Added";
         }
 
-        //retrieves the datetime WITHOUT loading the whole image
-       /* public static DateTime GetDateTakenFromImage(string path, out string prob)
+        public string GetUniquePath(string dst, string dst2)
         {
-            Image myImage = Image.FromFile(path);
-            try
+            int num = 1;
+            string name1 = Path.GetFileNameWithoutExtension(dst2);
+            string ext = Path.GetExtension(dst2);
+            dst2 = dst + Path.DirectorySeparatorChar + name1 + num.ToString() + ext;
+            while (File.Exists(dst2))
             {
-                PropertyItem propItem = myImage.GetPropertyItem(306);
-                DateTime dtaken;
-
-                //Convert date taken metadata to a DateTime object
-                string sdate = Encoding.UTF8.GetString(propItem.Value).Trim();
-                string secondhalf = sdate.Substring(sdate.IndexOf(" "), (sdate.Length - sdate.IndexOf(" ")));
-                string firsthalf = sdate.Substring(0, 10);
-                firsthalf = firsthalf.Replace(":", "-");
-                sdate = firsthalf + secondhalf;
-                dtaken = DateTime.Parse(sdate);
-                myImage.Dispose();
-                prob = "none";
-                return dtaken;
+                num++;
+                dst2 = dst + Path.DirectorySeparatorChar + name1 + num.ToString() + ext;
             }
-            catch (Exception e)
-            {
-                myImage.Dispose();
-                prob = e.ToString();
-                return new DateTime();
-            }
+            return dst2;
+        }
 
-        }*/
-
+    
         //we init this once so that if the function is repeatedly called
         //it isn't stressing the garbage man
         private static Regex r = new Regex(":");
@@ -127,12 +103,26 @@ namespace ImageService.Model
                 {
                     PropertyItem propItem = myImage.GetPropertyItem(36867);
                     string dateTaken = r.Replace(Encoding.UTF8.GetString(propItem.Value), "-", 2);
-                    prob = "none";
+                    prob = "";
                     return DateTime.Parse(dateTaken);
                 }
-            } catch(Exception e)
+            } catch(Exception)
             {
-                prob = e.ToString();
+                return GetCreation(path, out prob);
+            }
+        }
+
+        public static DateTime GetCreation(string path, out string prob)
+        {
+            try
+            {
+                DateTime date = File.GetCreationTime(path);
+                prob = "no date taken propperty, took creation time";
+                return date;
+            }
+            catch (Exception d)
+            {
+                prob = "no date taken property" + d.ToString();
                 return new DateTime();
             }
         }
@@ -210,3 +200,31 @@ namespace ImageService.Model
 
 }
 
+//retrieves the datetime WITHOUT loading the whole image
+/* public static DateTime GetDateTakenFromImage(string path, out string prob)
+ {
+     Image myImage = Image.FromFile(path);
+     try
+     {
+         PropertyItem propItem = myImage.GetPropertyItem(306);
+         DateTime dtaken;
+
+         //Convert date taken metadata to a DateTime object
+         string sdate = Encoding.UTF8.GetString(propItem.Value).Trim();
+         string secondhalf = sdate.Substring(sdate.IndexOf(" "), (sdate.Length - sdate.IndexOf(" ")));
+         string firsthalf = sdate.Substring(0, 10);
+         firsthalf = firsthalf.Replace(":", "-");
+         sdate = firsthalf + secondhalf;
+         dtaken = DateTime.Parse(sdate);
+         myImage.Dispose();
+         prob = "none";
+         return dtaken;
+     }
+     catch (Exception e)
+     {
+         myImage.Dispose();
+         prob = e.ToString();
+         return new DateTime();
+     }
+
+ }*/
