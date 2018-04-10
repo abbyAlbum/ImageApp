@@ -117,7 +117,7 @@ namespace ImageService.Model
             try
             {
                 DateTime date = File.GetCreationTime(path);
-                prob = "no date taken propperty, took creation time";
+                prob = " no date taken propperty, took creation time";
                 return date;
             }
             catch (Exception d)

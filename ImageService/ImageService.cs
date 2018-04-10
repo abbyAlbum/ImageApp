@@ -19,91 +19,98 @@ using System.Configuration;
 namespace ImageProject
 {
 
-        public enum ServiceState
-        {
-            SERVICE_STOPPED = 0x00000001,
-            SERVICE_START_PENDING = 0x00000002,
-            SERVICE_STOP_PENDING = 0x00000003,
-            SERVICE_RUNNING = 0x00000004,
-            SERVICE_CONTINUE_PENDING = 0x00000005,
-            SERVICE_PAUSE_PENDING = 0x00000006,
-            SERVICE_PAUSED = 0x00000007,
-        }
-
-        [StructLayout(LayoutKind.Sequential)]
-        public struct ServiceStatus
-        {
-            public int dwServiceType;
-            public ServiceState dwCurrentState;
-            public int dwControlsAccepted;
-            public int dwWin32ExitCode;
-            public int dwServiceSpecificExitCode;
-            public int dwCheckPoint;
-            public int dwWaitHint;
-        };
-
-        public partial class ImageService : ServiceBase
-        {
-
-            private ImageServer m_imageServer;          // The Image Server
-            private IImageServiceModel model;
-            private IImageController controller;
-            private ILoggingService logging;
-
-            public ImageService(string[] args)
-            {
-                InitializeComponent();
-                string eventSourceName = ConfigurationManager.AppSettings["SourceName"];
-                string logName = ConfigurationManager.AppSettings["LogName"];
-
-                eventLog1 = new EventLog();
-                if (!EventLog.SourceExists(eventSourceName))
-                {
-                    EventLog.CreateEventSource(eventSourceName, logName);
-                }
-                eventLog1.Source = eventSourceName;
-                eventLog1.Log = logName;
-            }
-
-            // Here You will Use the App Config!
-            protected override void OnStart(string[] args)
-            {
-                eventLog1.WriteEntry(ServiceState.SERVICE_RUNNING.ToString());
-                 // Update the service state to Start Pending.  
-                ServiceStatus serviceStatus = new ServiceStatus();
-                logging = new LoggingModal();
-                logging.MessageRecieved += OnMsg;
-                model = new ImageServiceModel(ConfigurationManager.AppSettings["OutputDir"], Int32.Parse(ConfigurationManager.AppSettings["ThumbnailSize"]));
-                controller = new ImageController(model);
-                m_imageServer = new ImageServer(controller, logging);
-                m_imageServer.CreateHandler(ConfigurationManager.AppSettings["Handler"]);
-                
-                serviceStatus.dwCurrentState = ServiceState.SERVICE_START_PENDING;
-                serviceStatus.dwWaitHint = 100000;
-
-                
-
-                
-
-                // Update the service state to Running.  
-                serviceStatus.dwCurrentState = ServiceState.SERVICE_RUNNING;
-                
-            }
-
-            protected override void OnStop()
-            {
-                
-                eventLog1.WriteEntry(ServiceState.SERVICE_STOPPED.ToString());
-            }
-
-            public void OnMsg(object sender, MessageRecievedEventArgs msg)
-            {
-                eventLog1.WriteEntry(msg.Message);
-            }
-
-
-        }
+    public enum ServiceState
+    {
+        SERVICE_STOPPED = 0x00000001,
+        SERVICE_START_PENDING = 0x00000002,
+        SERVICE_STOP_PENDING = 0x00000003,
+        SERVICE_RUNNING = 0x00000004,
+        SERVICE_CONTINUE_PENDING = 0x00000005,
+        SERVICE_PAUSE_PENDING = 0x00000006,
+        SERVICE_PAUSED = 0x00000007,
     }
+
+    [StructLayout(LayoutKind.Sequential)]
+    public struct ServiceStatus
+    {
+        public int dwServiceType;
+        public ServiceState dwCurrentState;
+        public int dwControlsAccepted;
+        public int dwWin32ExitCode;
+        public int dwServiceSpecificExitCode;
+        public int dwCheckPoint;
+        public int dwWaitHint;
+    };
+
+    public partial class ImageService : ServiceBase
+    {
+
+        private ImageServer m_imageServer;          // The Image Server
+        private IImageServiceModel model;
+        private IImageController controller;
+        private ILoggingService logging;
+
+        public ImageService(string[] args)
+        {
+            InitializeComponent();
+            string eventSourceName = ConfigurationManager.AppSettings["SourceName"];
+            string logName = ConfigurationManager.AppSettings["LogName"];
+
+            eventLog1 = new EventLog();
+            if (!EventLog.SourceExists(eventSourceName))
+            {
+                EventLog.CreateEventSource(eventSourceName, logName);
+            }
+            eventLog1.Source = eventSourceName;
+            eventLog1.Log = logName;
+        }
+
+        // Here You will Use the App Config!
+        protected override void OnStart(string[] args)
+        {
+            eventLog1.WriteEntry(ServiceState.SERVICE_RUNNING.ToString());
+            // Update the service state to Start Pending.  
+            ServiceStatus serviceStatus = new ServiceStatus();
+            logging = new LoggingModal();
+            logging.MessageRecieved += OnMsg;
+            model = new ImageServiceModel(ConfigurationManager.AppSettings["OutputDir"], Int32.Parse(ConfigurationManager.AppSettings["ThumbnailSize"]));
+            controller = new ImageController(model);
+            m_imageServer = new ImageServer(controller, logging);
+            CreateHandlers();
+
+            serviceStatus.dwCurrentState = ServiceState.SERVICE_START_PENDING;
+            serviceStatus.dwWaitHint = 100000;
+
+            // Update the service state to Running.  
+            serviceStatus.dwCurrentState = ServiceState.SERVICE_RUNNING;
+
+        }
+
+        private void CreateHandlers()
+        {
+            string paths = ConfigurationManager.AppSettings["Handler"];
+            IList<string> eachPath = paths.Split(';').Reverse().ToList<string>();
+            
+            for(int i = 0; i < eachPath.Count; ++i)
+            {
+                m_imageServer.CreateHandler(eachPath[i]);
+            }
+        }
+
+        protected override void OnStop()
+        {
+
+            eventLog1.WriteEntry(ServiceState.SERVICE_STOPPED.ToString());
+        }
+
+        public void OnMsg(object sender, MessageRecievedEventArgs msg)
+        {
+            eventLog1.WriteEntry(msg.Message);
+        }
+
+
+    }
+}
 
 
 /* private LoggingModal Logger;
