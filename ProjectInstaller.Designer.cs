@@ -39,8 +39,8 @@
             // 
             // serviceInstaller1
             // 
-            this.serviceInstaller1.Description = "a photos service";
-            this.serviceInstaller1.DisplayName = "My Photos Service";
+            this.serviceInstaller1.Description = "Photos Service";
+            this.serviceInstaller1.DisplayName = "ImageService";
             this.serviceInstaller1.ServiceName = "ImageService";
             this.serviceInstaller1.StartType = System.ServiceProcess.ServiceStartMode.Automatic;
             this.serviceInstaller1.AfterInstall += new System.Configuration.Install.InstallEventHandler(this.serviceInstaller1_AfterInstall);
