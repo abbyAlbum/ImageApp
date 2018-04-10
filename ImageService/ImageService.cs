@@ -99,7 +99,7 @@ namespace ImageProject
 
         protected override void OnStop()
         {
-
+            m_imageServer.SendCommandToController();
             eventLog1.WriteEntry(ServiceState.SERVICE_STOPPED.ToString());
         }
 

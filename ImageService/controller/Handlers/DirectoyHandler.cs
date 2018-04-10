@@ -30,7 +30,7 @@ namespace ImageService.Controller.Handlers
         public void OnCommandRecieved(object sender, CommandRecievedEventArgs e) //how to check if command is meant for its directory?
         {
             if (e.CommandID == (int)CommandEnum.CloseCommand) CloseHandler(sender, e);
-            m_controller.ExecuteCommand(e.CommandID, e.Args, out bool result); // why object sender? its "*"
+            else m_controller.ExecuteCommand(e.CommandID, e.Args, out bool result); // why object sender? its "*"
         }
 
         void CloseHandler(object sender, CommandRecievedEventArgs args)
@@ -39,13 +39,13 @@ namespace ImageService.Controller.Handlers
             try
             {
                 m_dirWatcher.EnableRaisingEvents = false;
-                eventArgs = new DirectoryCloseEventArgs(args.RequestDirPath, "deleted");
+                eventArgs = new DirectoryCloseEventArgs(m_path, " Handler closed");
             } catch(Exception e)
             {
-                eventArgs = new DirectoryCloseEventArgs(args.RequestDirPath, "problem");
+                eventArgs = new DirectoryCloseEventArgs(m_path, " Problem with closeing handler");
                 m_logging.Log(e.ToString(), Logging.Modal.MessageTypeEnum.FAIL);
             }
-            DirectoryClose.Invoke(sender, eventArgs);
+            DirectoryClose?.Invoke(this, eventArgs);
         }
 
         public void StartHandleDirectory(string dirPath)
