@@ -14,13 +14,21 @@ namespace ImageService.Model
         private string m_OutputFolder;            // The Output Folder
         private int m_thumbnailSize;              // The Size Of The Thumbnail Size
 
-
+        /// <summary>
+        ///Creates the ImageServiceModel.
+        ///Param: string - the output folder, int - the thumbnailsize
+        /// </summary>
         public ImageServiceModel(string m_OutputFolder, int m_TumbnailSize)
         {
             this.m_OutputFolder = m_OutputFolder;
             this.m_thumbnailSize = m_TumbnailSize;
         }
-
+        /// <summary>
+        /// Creates a hidden directory to add the pictures to.
+        /// Creates the years folder (sub directory) and thumbnail folder.
+        /// Organises by year/month and creates a thumbnail. 
+        /// Param: string - path, bool - the result
+        /// </summary>
         public string AddFile(string path, out bool result)
         {
             DirectoryInfo output = new DirectoryInfo(m_OutputFolder);
@@ -45,7 +53,11 @@ namespace ImageService.Model
             return MakeTumb(dst2, dst, out result) + prob;
 
         }
-
+        /// <summary>
+		/// Creates a thumbnail for each image.
+        /// Param: string - path to the picture, string - dst.
+        /// Return: string - that file was added.
+		/// </summary>
         public string MakeTumb(string path_to_pic, string dst, out bool result)
         {
             Image image = Image.FromFile(path_to_pic);
@@ -73,7 +85,11 @@ namespace ImageService.Model
             result = true;
             return "File Added";
         }
-
+        /// <summary>
+		/// Gets the path of the file - if not the same.
+        /// Param: string path
+        /// Return: the unique path
+		/// </summary>
         public string GetUniquePath(string dst, string dst2)
         {
             int num = 1;
@@ -94,6 +110,10 @@ namespace ImageService.Model
         private static Regex r = new Regex(":");
 
         //retrieves the datetime WITHOUT loading the whole image
+        /// <summary>
+		/// retrieves the datetime without loading the whole image.
+        /// Param: string - path.
+		/// </summary>
         public static DateTime GetDateTakenFromImage(string path, out string prob)
         {
             try
@@ -111,7 +131,10 @@ namespace ImageService.Model
                 return GetCreation(path, out prob);
             }
         }
-
+        /// <summary>
+        /// When there is no date get the creation
+        /// Param: string path, out string prob
+        /// </summary>
         public static DateTime GetCreation(string path, out string prob)
         {
             try
@@ -126,7 +149,12 @@ namespace ImageService.Model
                 return new DateTime();
             }
         }
-
+        /// <summary>
+        /// Finds the correct folder to add the image according to the date.
+        /// Then creates the directory to place the image if not already created. 
+        /// Param: DatimeTime - the date of the image, string - image path. 
+        /// Return: The path with the date.
+        /// </summary>
         public string FindFolder(DateTime date, string path)
         {
 
@@ -141,7 +169,11 @@ namespace ImageService.Model
             Directory.CreateDirectory(month_path);
             return month_path;
         }
-
+        /// <summary>
+        /// Adds the image to that specific directory. 
+        /// Param: string - the current directory, string - the destination path. 
+        /// Return: destination string.
+        /// </summary>
         public string MoveFile(string curDir, string dst2, out bool result)
         {
 
@@ -175,7 +207,11 @@ namespace ImageService.Model
             return dst4;
 
         }
-
+        /// <summary>
+        /// Remove file if already exists.
+        /// Param: String - image path. 
+        /// Param: string - path.
+        /// </summary>
         public void RemoveFile(string pathName)
         {
             if (File.Exists(pathName))

@@ -24,7 +24,10 @@ namespace ImageService.Server
         #region Properties
         public event EventHandler<CommandRecievedEventArgs> CommandRecieved;          // The event that notifies about a new Command being recieved
         #endregion
-
+        /// <summary>
+        /// Creates the ImagerServer.
+        /// Param: IImageController, ILoggingService.
+        /// </summary>
         public ImageServer(IImageController image, ILoggingService logging)
         {
             m_controller = image;
@@ -32,7 +35,10 @@ namespace ImageService.Server
             commands = new Dictionary<int, CommandEnum> { };
             commands.Add(0, CommandEnum.CloseCommand);
         }
-       
+        /// <summary>
+        /// Creates the directory handler that listens for images to be added (and eventually adds them).
+        /// Param: the path 
+        /// </summary>
         public void CreateHandler(string path)
         {
             IDirectoryHandler h = new DirectoyHandler(m_controller, m_logging, path);
@@ -40,7 +46,10 @@ namespace ImageService.Server
             CommandRecieved += h.OnCommandRecieved;
             h.DirectoryClose += OnCloseServer;
         }
-
+        /// <summary>
+        /// Closes the server and logs the result.
+        /// Param: Object sender, DirectoryCloseEventArgs args.
+        /// </summary>
         public void OnCloseServer(Object sender, DirectoryCloseEventArgs args)
         {
             IDirectoryHandler h = (IDirectoryHandler)sender;
@@ -48,7 +57,9 @@ namespace ImageService.Server
             h.DirectoryClose -= OnCloseServer;
             m_logging.Log(args.DirectoryPath + args.Message, Logging.Modal.MessageTypeEnum.INFO);
         }
-
+        /// <summary>
+        /// Sends the command to the controller, that then executes the command.
+        /// </summary>
         public void SendCommandToController()
         {
             string[] args = null;

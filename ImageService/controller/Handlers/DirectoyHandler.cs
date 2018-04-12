@@ -16,7 +16,10 @@ namespace ImageService.Controller.Handlers
         #endregion
 
         public event EventHandler<DirectoryCloseEventArgs> DirectoryClose;              // The Event That Notifies that the Directory is being closed
-
+        /// <summary>
+        /// Creates the DirectoryHandler.
+        /// Param: IImageController, ILoggingService, string.
+        /// </summary>
         public DirectoyHandler(IImageController m_controller, ILoggingService m_logging, string m_path)
         {
             this.m_controller = m_controller;
@@ -26,13 +29,20 @@ namespace ImageService.Controller.Handlers
             StartHandleDirectory(m_path);
         }
 
-
+        /// <summary>
+        ///See if command is meant for its directory
+        ///Close command of execute command.
+        ///Param: object, CommandRecuevedEventArgs.
+        /// </summary>
         public void OnCommandRecieved(object sender, CommandRecievedEventArgs e) //how to check if command is meant for its directory?
         {
             if (e.CommandID == (int)CommandEnum.CloseCommand) CloseHandler(sender, e);
             else m_controller.ExecuteCommand(e.CommandID, e.Args, out bool result); // why object sender? its "*"
         }
-
+        /// <summary>
+        /// Stops listening for changes in the file, closes the handler.
+        /// Param: Object sender, CommandRecievedArgs args.
+        /// </summary>
         void CloseHandler(object sender, CommandRecievedEventArgs args)
         {
             DirectoryCloseEventArgs eventArgs;
@@ -47,7 +57,10 @@ namespace ImageService.Controller.Handlers
             }
             DirectoryClose?.Invoke(this, eventArgs);
         }
-
+        /// <summary>
+        /// Listen for images to be added to the path - for a change in the file.
+        /// Param: string - path.
+        /// </summary>
         public void StartHandleDirectory(string dirPath)
         {
             m_dirWatcher.Path = dirPath;
@@ -65,7 +78,11 @@ namespace ImageService.Controller.Handlers
             m_dirWatcher.EnableRaisingEvents = true;
 
         }
-
+        /// <summary>
+        /// If image has the correct file type then add it to the directroy.
+        /// Logs the result.
+        /// Param: object, FileSystemEventArgs.
+        /// </summary>
         private void OnChanged(object source, FileSystemEventArgs e)
         {
             while (IsFileLocked(new FileInfo(e.FullPath)));
@@ -85,7 +102,10 @@ namespace ImageService.Controller.Handlers
 
             }
         }
-
+        /// <summary>
+        ///In case file is too big, checks whole file is transferred
+        ///Param: FileInfo file
+        /// </summary>
         private bool IsFileLocked(FileInfo file)
         {
             FileStream stream = null;

@@ -16,6 +16,11 @@ namespace ImageService.Controller
         private IImageServiceModel m_model;                      // The Modal Object
         private Dictionary<int, ICommand> commands;
 
+        /// <summary>
+        /// Creates the ImageController.
+        /// Param: IImagerServiceModel.
+        /// Creates the command - the NewFileCommand.
+        /// </summary>
         public ImageController(IImageServiceModel model)
         {
             m_model = model;                    // Storing the Modal Of The System
@@ -26,7 +31,10 @@ namespace ImageService.Controller
 
         }
 
-
+        /// <summary>
+        /// Executes the command inputted.
+        /// Param: int - the id of the command, string - args, bool - result.
+        /// </summary>
         public string ExecuteCommand(int commandID, string[] args, out bool resultSuccesful)
         {
             return commands[commandID].Execute(args, out resultSuccesful); 

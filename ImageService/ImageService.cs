@@ -50,6 +50,10 @@ namespace ImageProject
         private IImageController controller;
         private ILoggingService logging;
 
+        /// <summary>
+        /// Creates the ImageService
+        /// Param: string[] args - the argument 
+        /// </summary>
         public ImageService(string[] args)
         {
             InitializeComponent();
@@ -66,6 +70,10 @@ namespace ImageProject
         }
 
         // Here You will Use the App Config!
+        /// <summary>
+        ///Start the server
+        ///Param: string[] args - the command line arguments 
+        /// </summary>
         protected override void OnStart(string[] args)
         {
             eventLog1.WriteEntry(ServiceState.SERVICE_RUNNING.ToString());
@@ -85,7 +93,9 @@ namespace ImageProject
             serviceStatus.dwCurrentState = ServiceState.SERVICE_RUNNING;
 
         }
-
+        /// <summary>
+        /// Creates the handler
+        /// </summary>
         private void CreateHandlers()
         {
             string paths = ConfigurationManager.AppSettings["Handler"];
@@ -96,13 +106,18 @@ namespace ImageProject
                 m_imageServer.CreateHandler(eachPath[i]);
             }
         }
-
+        /// <summary>
+        /// Stops the server
+        /// </summary>
         protected override void OnStop()
         {
             m_imageServer.SendCommandToController();
             eventLog1.WriteEntry(ServiceState.SERVICE_STOPPED.ToString());
         }
-
+        /// <summary>
+        ///Logs a message.
+        ///Param: Object sender, MessageRecievedEventArgs msg
+        /// </summary>
         public void OnMsg(object sender, MessageRecievedEventArgs msg)
         {
             eventLog1.WriteEntry(msg.Message);
