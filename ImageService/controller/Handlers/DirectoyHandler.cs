@@ -26,7 +26,10 @@ namespace ImageService.Controller.Handlers
             this.m_logging = m_logging;
             this.m_path = m_path;
             this.m_dirWatcher = new FileSystemWatcher();
-            StartHandleDirectory(m_path);
+            if (Directory.Exists(m_path))
+            {
+                StartHandleDirectory(m_path);
+            } else m_logging.Log("No such directory! Handler Not Created for path " + m_path, Logging.Modal.MessageTypeEnum.FAIL);
         }
 
         /// <summary>
