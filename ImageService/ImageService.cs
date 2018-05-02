@@ -15,6 +15,7 @@ using ImageService.Controller;
 using ImageService.ImageService_Logging.Model;
 using ImageService.Model;
 using System.Configuration;
+using System.Threading;
 
 namespace ImageProject
 {
@@ -84,6 +85,7 @@ namespace ImageProject
             model = new ImageServiceModel(ConfigurationManager.AppSettings["OutputDir"], Int32.Parse(ConfigurationManager.AppSettings["ThumbnailSize"]));
             controller = new ImageController(model);
             m_imageServer = new ImageServer(controller, logging);
+            
             CreateHandlers();
 
             serviceStatus.dwCurrentState = ServiceState.SERVICE_START_PENDING;
@@ -92,7 +94,12 @@ namespace ImageProject
             // Update the service state to Running.  
             serviceStatus.dwCurrentState = ServiceState.SERVICE_RUNNING;
 
+            var server = new Thread(m_imageServer.StartServer);
+            server.IsBackground = false;
+            server.Start();
+
         }
+        
         /// <summary>
         /// Creates the handler
         /// </summary>

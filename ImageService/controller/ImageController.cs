@@ -27,6 +27,7 @@ namespace ImageService.Controller
             commands = new Dictionary<int, ICommand>
             {
                 { 0, new NewFileCommand(m_model) }
+
             };
 
         }
