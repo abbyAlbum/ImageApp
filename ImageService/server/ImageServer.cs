@@ -117,28 +117,33 @@ namespace ImageService.Server
         }
         private void ReadCommand(Socket s, int value)
         {
-            byte[] b = new byte[100];
-            int k = s.Receive(b);
-            m_logging.Log("Recieved...", Logging.Modal.MessageTypeEnum.INFO);
-            m_logging.Log(Convert.ToChar(b[0]).ToString(), Logging.Modal.MessageTypeEnum.INFO);
-            int i = Convert.ToChar(b[0]);
-            m_logging.Log(i.ToString(), Logging.Modal.MessageTypeEnum.INFO);
-            switch (i)
+            while (true)
             {
-                case 49:
-                    ICommand c = new GetConfigCommand(s, value);
-                    c.Execute(null, out bool result);
-                    break;
-                case 50:
-                    ICommand d = new LogCommand(s);
-                    d.Execute(null, out bool j);
-                    break;
+                byte[] b = new byte[1000];
+                string send = "empty";
+                int k = s.Receive(b);
+                m_logging.Log("Recieved...", Logging.Modal.MessageTypeEnum.INFO);
+                m_logging.Log(Convert.ToChar(b[0]).ToString(), Logging.Modal.MessageTypeEnum.INFO);
+                int i = (int)Char.GetNumericValue(Convert.ToChar(b[0]));
+                m_logging.Log(i.ToString(), Logging.Modal.MessageTypeEnum.INFO);
+                switch (i)
+                {
+                    case 1:
+                        send = m_controller.ExecuteCommand(i, null, out bool result);
+                        break;
+                    case 2:
+                        send = m_controller.ExecuteCommand(i, null, out bool res);
+                        break;
+                }
+                m_logging.Log("sending " + send, Logging.Modal.MessageTypeEnum.INFO);
+                Write(s, value, send);
             }
         }
 
-        private void Write(Socket s, int value)
+        private void Write(Socket s, int value, string send)
         {
-          
+            ASCIIEncoding asen = new ASCIIEncoding();
+            s.Send(asen.GetBytes(send));
 
         }
 

@@ -1,4 +1,5 @@
 ﻿using ImageService.Commands;
+using ImageService.ImageService.commands;
 using ImageService.Infrastructure;
 using ImageService.Infrastructure.Enums;
 using ImageService.Modal;
@@ -26,7 +27,9 @@ namespace ImageService.Controller
             m_model = model;                    // Storing the Modal Of The System
             commands = new Dictionary<int, ICommand>
             {
-                { 0, new NewFileCommand(m_model) }
+                { 0, new NewFileCommand(m_model) },
+                { 1, new GetConfigCommand() },
+                { 2, new LogCommand() }
 
             };
 
