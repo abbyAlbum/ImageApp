@@ -57,6 +57,7 @@
     <Compile Include="ImageService.Infrastructure\enums\CommandEnum.cs" />
     <Compile Include="ImageService\commands\GetConfigCommand.cs" />
     <Compile Include="ImageService\commands\ICommand.cs" />
+    <Compile Include="ImageService\commands\LogCommand.cs" />
     <Compile Include="ImageService\commands\NewFileCommand.cs" />
     <Compile Include="ImageService\controller\Handlers\DirectoyHandler.cs" />
     <Compile Include="ImageService\controller\Handlers\IDirectoryHandler.cs" />

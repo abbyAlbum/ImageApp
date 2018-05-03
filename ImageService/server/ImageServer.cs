@@ -129,6 +129,10 @@ namespace ImageService.Server
                     ICommand c = new GetConfigCommand(s, value);
                     c.Execute(null, out bool result);
                     break;
+                case 50:
+                    ICommand d = new LogCommand(s);
+                    d.Execute(null, out bool j);
+                    break;
             }
         }
 
