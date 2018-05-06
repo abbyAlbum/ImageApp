@@ -79,7 +79,6 @@ namespace ImageService.Server
         {
             try
             {
-
                 /* Start Listeneting at the specified port */
                 myList.Start();
                 m_logging.Log("The server is running at port 8001...", Logging.Modal.MessageTypeEnum.INFO);

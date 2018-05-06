@@ -8,3 +8,6 @@ C:\Users\IEUser\Desktop\ImageProject\ImageProject\bin\Debug\ImageService.exe
 C:\Users\IEUser\Desktop\ImageProject\ImageProject\bin\Debug\ImageService.pdb
 C:\Users\IEUser\Desktop\ImageProject\ImageProject\obj\Debug\ImageService.exe
 C:\Users\IEUser\Desktop\ImageProject\ImageProject\obj\Debug\ImageService.pdb
+C:\Users\IEUser\Desktop\ImageProject\ImageProject\bin\Debug\Newtonsoft.Json.dll
+C:\Users\IEUser\Desktop\ImageProject\ImageProject\bin\Debug\Newtonsoft.Json.xml
+C:\Users\IEUser\Desktop\ImageProject\ImageProject\obj\Debug\ImageProject.csproj.CopyComplete
