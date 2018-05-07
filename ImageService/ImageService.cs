@@ -128,6 +128,7 @@ namespace ImageProject
         public void OnMsg(object sender, MessageRecievedEventArgs msg)
         {
             eventLog1.WriteEntry(msg.Message);
+            m_imageServer.SendLog(msg.Message);
         }
 
 

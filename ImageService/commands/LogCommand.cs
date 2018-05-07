@@ -28,41 +28,22 @@ namespace ImageService.ImageService.commands
             EventLogReader reader = new EventLogReader(query);
            
             EventRecord eventRecord;
-            
-            
+
+            IList<string> logs = new List<string>();
+
             string output = "";
             int i = 0;
-            while ((eventRecord = reader.ReadEvent()) != null && i < 100)
+            while ((eventRecord = reader.ReadEvent()) != null)
             {
-                output += eventRecord.Id + ",";
-                output += eventRecord.FormatDescription() + "*";
-                i += 1;
+                logs.Add(eventRecord.Id + "," + eventRecord.FormatDescription() + "*");
+                
             }
-           /* try
+            for(int j = logs.Count - 1; j > 0; j--)
             {
-                output = JsonConvert.SerializeObject(output);
-            } catch(Exception e)
-            {
-                output = e.ToString();
-            }*/
-            
-
-
-            /*for(int i = 0; i < eventLogs.Length; i++)
-            {
-                if(eventLogs[i].LogDisplayName == "ImageServiceLog")
-                {
-                    EventLogEntryCollection k = eventLogs[i].Entries;
-                    
-                    for (int j = 0; j < 50; j++)
-                    {
-                        output += k[i].EntryType + ",";
-                        output += k[i].Message + "*";
-                    }
-                    
-                }*/
-            //output += eventLogs[i].LogDisplayName + ",";
-            //output += eventLogs[i].Log + "*";
+                if (logs.ElementAt(j).Contains("SERVICE_RUNNING")) break;
+                output += logs[j];
+            }
+        
 
             result = true;
             return output;
@@ -72,3 +53,32 @@ namespace ImageService.ImageService.commands
         }
     }
 
+
+
+
+
+/* try
+         {
+             output = JsonConvert.SerializeObject(output);
+         } catch(Exception e)
+         {
+             output = e.ToString();
+         }*/
+
+
+
+/*for(int i = 0; i < eventLogs.Length; i++)
+{
+    if(eventLogs[i].LogDisplayName == "ImageServiceLog")
+    {
+        EventLogEntryCollection k = eventLogs[i].Entries;
+
+        for (int j = 0; j < 50; j++)
+        {
+            output += k[i].EntryType + ",";
+            output += k[i].Message + "*";
+        }
+
+    }*/
+//output += eventLogs[i].LogDisplayName + ",";
+//output += eventLogs[i].Log + "*";

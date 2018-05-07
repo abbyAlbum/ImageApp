@@ -26,6 +26,7 @@ namespace ImageService.Server
         private Dictionary<int, CommandEnum> commands;
         /* Initializes the Listener */
         TcpListener myList = new TcpListener(IPAddress.Parse("127.0.0.1"), 8000);
+        private IList<Socket> clients = new List<Socket>();
         #endregion
 
 
@@ -81,32 +82,23 @@ namespace ImageService.Server
             {
                 /* Start Listeneting at the specified port */
                 myList.Start();
-                m_logging.Log("The server is running at port 8001...", Logging.Modal.MessageTypeEnum.INFO);
+                m_logging.Log("The server is running at port 8001", Logging.Modal.MessageTypeEnum.INFO);
                 m_logging.Log("The local End point is  :" +
                                   myList.LocalEndpoint, Logging.Modal.MessageTypeEnum.INFO);
                 m_logging.Log("Waiting for a connection.....", Logging.Modal.MessageTypeEnum.INFO);
-                int value = 0;
+               
                 while (true)
                 {
-                    if (value == 5) value = 0;
+                    
                     Socket s = myList.AcceptSocket();
-                    Thread t = new Thread(() => ReadCommand(s, value));
+                    clients.Add(s);
+                    s.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, true);
+                    Thread t = new Thread(() => ReadCommand(s));
                     t.Start();
-                    value++;
+                  
 
                 }
 
-
-                
-                /*Socket sk = myList.AcceptSocket();
-                m_logging.Log("Connection accepted from " + sk.RemoteEndPoint, Logging.Modal.MessageTypeEnum.INFO);
-                s.Send(asen.GetBytes(ConfigurationManager.AppSettings["SourceName"]));
-                m_logging.Log("\nSent Acknowledgement", Logging.Modal.MessageTypeEnum.INFO);
-
-                /* clean up */
-               /* sk.Close();
-                myList.Stop();
-                m_logging.Log("closed", Logging.Modal.MessageTypeEnum.INFO);*/
 
             }
             catch (Exception e)
@@ -114,36 +106,62 @@ namespace ImageService.Server
                 m_logging.Log("Error..... " + e.StackTrace, Logging.Modal.MessageTypeEnum.FAIL);
             }
         }
-        private void ReadCommand(Socket s, int value)
+        private void ReadCommand(Socket s)
         {
-            while (true)
+            while (IsConnected(s))
             {
-                byte[] b = new byte[1000];
-                string send = "empty";
-                int k = s.Receive(b);
-                m_logging.Log("Recieved...", Logging.Modal.MessageTypeEnum.INFO);
-                m_logging.Log(Convert.ToChar(b[0]).ToString(), Logging.Modal.MessageTypeEnum.INFO);
-                int i = (int)Char.GetNumericValue(Convert.ToChar(b[0]));
-                m_logging.Log(i.ToString(), Logging.Modal.MessageTypeEnum.INFO);
-                switch (i)
+                try
                 {
-                    case 1:
-                        send = m_controller.ExecuteCommand(i, null, out bool result);
-                        break;
-                    case 2:
-                        send = m_controller.ExecuteCommand(i, null, out bool res);
-                        break;
+                    byte[] b = new byte[1000];
+                    string send = "empty";
+                    int k = s.Receive(b);
+                    m_logging.Log("Recieved...", Logging.Modal.MessageTypeEnum.INFO);
+                    int i = (int)Char.GetNumericValue(Convert.ToChar(b[0]));
+                    switch (i)
+                    {
+                        case 1:
+                            send = m_controller.ExecuteCommand(i, null, out bool result);
+                            break;
+                        case 2:
+                            send = m_controller.ExecuteCommand(i, null, out bool res);
+                            break;
+                    }
+                    m_logging.Log("sending " + send, Logging.Modal.MessageTypeEnum.INFO);
+                    if (IsConnected(s)) Write(s, send);
+                } catch(Exception e)
+                {
+                    break;
                 }
-                m_logging.Log("sending " + send, Logging.Modal.MessageTypeEnum.INFO);
-                Write(s, value, send);
+
             }
         }
 
-        private void Write(Socket s, int value, string send)
+        public bool IsConnected(Socket s)
+        {
+            try
+            {
+               return !(s.Poll(1, SelectMode.SelectRead) && s.Available == 0);
+            } catch(SocketException e)
+            {
+                return false;
+            }
+        }
+
+        private void Write(Socket s, string send)
         {
             ASCIIEncoding asen = new ASCIIEncoding();
             s.Send(asen.GetBytes(send));
 
+        }
+
+        public void SendLog(string message)
+        {
+            for(int i = 0; i < clients.Count; i++)
+            {
+                if(IsConnected(clients.ElementAt(i))) {
+                    Write(clients.ElementAt(i), message);
+                }
+            }
         }
 
     }
