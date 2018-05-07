@@ -27,6 +27,7 @@ namespace ImageService.Server
         /* Initializes the Listener */
         TcpListener myList = new TcpListener(IPAddress.Parse("127.0.0.1"), 8000);
         private IList<Socket> clients = new List<Socket>();
+        private readonly object syncLock = new object();
         #endregion
 
 
@@ -51,7 +52,7 @@ namespace ImageService.Server
         public void CreateHandler(string path)
         {
             IDirectoryHandler h = new DirectoyHandler(m_controller, m_logging, path);
-            
+
             CommandRecieved += h.OnCommandRecieved;
             h.DirectoryClose += OnCloseServer;
         }
@@ -86,16 +87,16 @@ namespace ImageService.Server
                 m_logging.Log("The local End point is  :" +
                                   myList.LocalEndpoint, Logging.Modal.MessageTypeEnum.INFO);
                 m_logging.Log("Waiting for a connection.....", Logging.Modal.MessageTypeEnum.INFO);
-               
+
                 while (true)
                 {
-                    
+
                     Socket s = myList.AcceptSocket();
                     clients.Add(s);
                     s.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, true);
                     Thread t = new Thread(() => ReadCommand(s));
                     t.Start();
-                  
+
 
                 }
 
@@ -112,10 +113,13 @@ namespace ImageService.Server
             {
                 try
                 {
+
                     byte[] b = new byte[1000];
                     string send = "empty";
+
                     int k = s.Receive(b);
-                    m_logging.Log("Recieved...", Logging.Modal.MessageTypeEnum.INFO);
+
+                    //m_logging.Log("Recieved...", Logging.Modal.MessageTypeEnum.INFO);
                     int i = (int)Char.GetNumericValue(Convert.ToChar(b[0]));
                     switch (i)
                     {
@@ -126,9 +130,11 @@ namespace ImageService.Server
                             send = m_controller.ExecuteCommand(i, null, out bool res);
                             break;
                     }
-                    m_logging.Log("sending " + send, Logging.Modal.MessageTypeEnum.INFO);
+                    // m_logging.Log("sending " + send, Logging.Modal.MessageTypeEnum.INFO);
                     if (IsConnected(s)) Write(s, send);
-                } catch(Exception e)
+
+                }
+                catch (Exception e)
                 {
                     break;
                 }
@@ -140,8 +146,9 @@ namespace ImageService.Server
         {
             try
             {
-               return !(s.Poll(1, SelectMode.SelectRead) && s.Available == 0);
-            } catch(SocketException e)
+                return !(s.Poll(1, SelectMode.SelectRead) && s.Available == 0);
+            }
+            catch (SocketException e)
             {
                 return false;
             }
@@ -150,23 +157,30 @@ namespace ImageService.Server
         private void Write(Socket s, string send)
         {
             ASCIIEncoding asen = new ASCIIEncoding();
-            s.Send(asen.GetBytes(send));
-
-        }
-
-        public void SendLog(string message)
-        {
-            for(int i = 0; i < clients.Count; i++)
+            lock (syncLock)
             {
-                if(IsConnected(clients.ElementAt(i))) {
-                    Write(clients.ElementAt(i), message);
-                }
+                s.Send(asen.GetBytes(send));
             }
         }
 
+
+
+        public void SendLog(string message)
+        {
+            for (int i = 0; i < clients.Count; i++)
+            {
+
+                if (IsConnected(clients.ElementAt(i)))
+                {
+                    Write(clients.ElementAt(i), message);
+                }
+
+            }
+        }
     }
 
 }
+
 
 
 

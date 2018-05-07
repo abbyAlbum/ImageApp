@@ -16,6 +16,7 @@ using ImageService.ImageService_Logging.Model;
 using ImageService.Model;
 using System.Configuration;
 using System.Threading;
+using ImageService.Logging.Modal;
 
 namespace ImageProject
 {
@@ -127,8 +128,10 @@ namespace ImageProject
         /// </summary>
         public void OnMsg(object sender, MessageRecievedEventArgs msg)
         {
-            eventLog1.WriteEntry(msg.Message);
-            m_imageServer.SendLog(msg.Message);
+            if(msg.Status == MessageTypeEnum.INFO) eventLog1.WriteEntry(msg.Message, EventLogEntryType.Information);
+            if (msg.Status == MessageTypeEnum.WARNING) eventLog1.WriteEntry(msg.Message, EventLogEntryType.Warning);
+            if (msg.Status == MessageTypeEnum.FAIL) eventLog1.WriteEntry(msg.Message, EventLogEntryType.FailureAudit);
+            m_imageServer.SendLog(msg.Status + "," + msg.Message);
         }
 
 
