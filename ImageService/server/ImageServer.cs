@@ -65,7 +65,6 @@ namespace ImageService.Server
             IDirectoryHandler h = (IDirectoryHandler)sender;
             CommandRecieved -= h.OnCommandRecieved;
             h.DirectoryClose -= OnCloseServer;
-            myList.Stop();
             m_logging.Log(args.DirectoryPath + args.Message, Logging.Modal.MessageTypeEnum.INFO);
         }
         /// <summary>
