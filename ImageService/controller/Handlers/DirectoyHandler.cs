@@ -39,7 +39,7 @@ namespace ImageService.Controller.Handlers
         /// </summary>
         public void OnCommandRecieved(object sender, CommandRecievedEventArgs e) //how to check if command is meant for its directory?
         {
-            if (e.CommandID == (int)CommandEnum.CloseCommand) CloseHandler(sender, e);
+            if (e.CommandID == (int)CommandEnum.CloseCommand && (e.RequestDirPath.Equals(m_path) || e.RequestDirPath.Equals(""))) CloseHandler(sender, e);
             else m_controller.ExecuteCommand(e.CommandID, e.Args, out bool result); // why object sender? its "*"
         }
         /// <summary>

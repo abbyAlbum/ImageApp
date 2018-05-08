@@ -74,7 +74,7 @@ namespace ImageService.Server
         public void SendCommandToController()
         {
             string[] args = null;
-            CommandRecieved("*", new CommandRecievedEventArgs(3, args, ""));
+            CommandRecieved?.Invoke("*", new CommandRecievedEventArgs(3, args, ""));
         }
 
         public void StartServer()
@@ -129,6 +129,12 @@ namespace ImageService.Server
                         case 2:
                             send = m_controller.ExecuteCommand(i, null, out bool res);
                             break;
+                        case 5:
+                            string handel = ByteToString(b, k);
+                            IList<string> each = handel.Split(',').Reverse().ToList();
+                            CommandRecieved("*", new CommandRecievedEventArgs(3, null, each[0]));
+                            send = "2" + each[0];
+                            break;
                     }
                     // m_logging.Log("sending " + send, Logging.Modal.MessageTypeEnum.INFO);
                     if (IsConnected(s)) Write(s, send);
@@ -140,6 +146,15 @@ namespace ImageService.Server
                 }
 
             }
+        }
+
+        private string ByteToString(byte[] b, int k)
+        {
+            string output = "";
+            
+            for (int i = 0; i < k; i++)
+                output += Convert.ToChar(b[i]).ToString();
+            return output;
         }
 
         public bool IsConnected(Socket s)
@@ -172,7 +187,7 @@ namespace ImageService.Server
 
                 if (IsConnected(clients.ElementAt(i)))
                 {
-                    Write(clients.ElementAt(i), message);
+                    Write(clients.ElementAt(i), "1" + message);
                 }
 
             }
