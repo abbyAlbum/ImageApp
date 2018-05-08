@@ -131,6 +131,7 @@ namespace ImageProject
             if(msg.Status == MessageTypeEnum.INFO) eventLog1.WriteEntry(msg.Message, EventLogEntryType.Information);
             if (msg.Status == MessageTypeEnum.WARNING) eventLog1.WriteEntry(msg.Message, EventLogEntryType.Warning);
             if (msg.Status == MessageTypeEnum.FAIL) eventLog1.WriteEntry(msg.Message, EventLogEntryType.FailureAudit);
+
             m_imageServer.SendLog(msg.Status + "," + msg.Message);
         }
 
