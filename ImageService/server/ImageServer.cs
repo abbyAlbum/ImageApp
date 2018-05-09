@@ -74,6 +74,7 @@ namespace ImageService.Server
         {
             string[] args = null;
             CommandRecieved?.Invoke("*", new CommandRecievedEventArgs(3, args, ""));
+            myList.Stop();
         }
 
         public void StartServer()
@@ -128,11 +129,15 @@ namespace ImageService.Server
                         case 2:
                             send = m_controller.ExecuteCommand(i, null, out bool res);
                             break;
+                        case 3: clients.Remove(s);
+                                return;
+                            
                         case 5:
                             string handel = ByteToString(b, k);
                             IList<string> each = handel.Split(',').Reverse().ToList();
-                            CommandRecieved("*", new CommandRecievedEventArgs(3, null, each[0]));
+                            CommandRecieved?.Invoke("*", new CommandRecievedEventArgs(3, null, each[0]));
                             send = "2" + each[0];
+                            SendCloseHandler(each[0], s);
                             break;
                     }
                     // m_logging.Log("sending " + send, Logging.Modal.MessageTypeEnum.INFO);
@@ -176,6 +181,20 @@ namespace ImageService.Server
                 s.Send(asen.GetBytes(send));
             }
         }
+
+        public void SendCloseHandler(string path, Socket s)
+        {
+            for (int i = 0; i < clients.Count; i++)
+            {
+
+                if (IsConnected(clients.ElementAt(i)) && clients.ElementAt(i) != s)
+                {
+                    Write(clients.ElementAt(i), "2" + path);
+                }
+
+            }
+        }
+    
 
 
 
