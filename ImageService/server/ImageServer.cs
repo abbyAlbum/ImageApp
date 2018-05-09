@@ -189,7 +189,14 @@ namespace ImageService.Server
 
                 if (IsConnected(clients.ElementAt(i)) && clients.ElementAt(i) != s)
                 {
-                    Write(clients.ElementAt(i), "2" + path);
+                    try
+                    {
+                        Write(clients.ElementAt(i), "2" + path);
+                    } catch(Exception e)
+                    {
+                        clients.Remove(clients.ElementAt(i));
+                        i = i - 1;
+                    }
                 }
 
             }
@@ -204,8 +211,16 @@ namespace ImageService.Server
             {
 
                 if (IsConnected(clients.ElementAt(i)))
-                {
-                    Write(clients.ElementAt(i), "1" + message);
+                { 
+                    try
+                    {
+                        Write(clients.ElementAt(i), "1" + message);
+                    }
+                    catch (Exception e)
+                    {
+                        clients.Remove(clients.ElementAt(i));
+                        i = i - 1;
+                    }
                 }
 
             }
