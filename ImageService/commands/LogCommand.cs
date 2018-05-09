@@ -40,7 +40,11 @@ namespace ImageService.ImageService.commands
             }
             for(int j = logs.Count - 1; j > 0; j--)
             {
-                if (logs.ElementAt(j).Contains("SERVICE_RUNNING")) break;
+                if (logs.ElementAt(j).Contains("SERVICE_RUNNING"))
+                {
+                    output += logs[j];
+                    break;
+                }
                 output += logs[j];
             }
         
