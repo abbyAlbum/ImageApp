@@ -107,6 +107,11 @@ namespace ImageService.Server
                 m_logging.Log("Error..... " + e.StackTrace, Logging.Modal.MessageTypeEnum.FAIL);
             }
         }
+
+        /// <summary>
+        /// Reads the command from the client.
+        /// </summary>
+        /// <param socker="s"></param>
         private void ReadCommand(Socket s)
         {
             while (IsConnected(s))
@@ -152,6 +157,11 @@ namespace ImageService.Server
             }
         }
 
+        /// <summary>
+        /// Converts from byte to string
+        /// </summary>
+        /// <param byte[]="b"></param>
+        /// <param int="k"></param>
         private string ByteToString(byte[] b, int k)
         {
             string output = "";
@@ -161,6 +171,10 @@ namespace ImageService.Server
             return output;
         }
 
+        /// <summary>
+        /// Checks if still connected
+        /// </summary>
+        /// <param socket="s"></param>
         public bool IsConnected(Socket s)
         {
             try
@@ -173,6 +187,11 @@ namespace ImageService.Server
             }
         }
 
+        /// <summary>
+        /// Writes to the client
+        /// </summary>
+        /// <param Socket="s"></param>
+        /// <param string="send"></param>
         private void Write(Socket s, string send)
         {
             ASCIIEncoding asen = new ASCIIEncoding();
@@ -182,6 +201,11 @@ namespace ImageService.Server
             }
         }
 
+        /// <summary>
+        /// Sends close to client
+        /// </summary>
+        /// <param string="path"></param>
+        /// <param Sokcet="s"></param>
         public void SendCloseHandler(string path, Socket s)
         {
             for (int i = 0; i < clients.Count; i++)
@@ -203,7 +227,10 @@ namespace ImageService.Server
         }
     
 
-
+        /// <summary>
+        /// Sends the log to the client
+        /// </summary>
+        /// <param string="message"></param>
 
         public void SendLog(string message)
         {

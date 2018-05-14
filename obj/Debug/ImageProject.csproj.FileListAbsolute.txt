@@ -11,3 +11,15 @@ C:\Users\IEUser\Desktop\ImageProject\ImageProject\obj\Debug\ImageService.pdb
 C:\Users\IEUser\Desktop\ImageProject\ImageProject\bin\Debug\Newtonsoft.Json.dll
 C:\Users\IEUser\Desktop\ImageProject\ImageProject\bin\Debug\Newtonsoft.Json.xml
 C:\Users\IEUser\Desktop\ImageProject\ImageProject\obj\Debug\ImageProject.csproj.CopyComplete
+C:\Users\Abby\source\repos\ImageApp\bin\Debug\ImageService.exe.config
+C:\Users\Abby\source\repos\ImageApp\bin\Debug\ImageService.exe
+C:\Users\Abby\source\repos\ImageApp\bin\Debug\ImageService.pdb
+C:\Users\Abby\source\repos\ImageApp\bin\Debug\Newtonsoft.Json.xml
+C:\Users\Abby\source\repos\ImageApp\obj\Debug\ImageProject.csprojResolveAssemblyReference.cache
+C:\Users\Abby\source\repos\ImageApp\obj\Debug\ImageProject.ImageService.resources
+C:\Users\Abby\source\repos\ImageApp\obj\Debug\ImageService.ProjectInstaller.resources
+C:\Users\Abby\source\repos\ImageApp\obj\Debug\ImageProject.csproj.GenerateResource.cache
+C:\Users\Abby\source\repos\ImageApp\obj\Debug\ImageProject.csproj.CoreCompileInputs.cache
+C:\Users\Abby\source\repos\ImageApp\obj\Debug\ImageProject.csproj.CopyComplete
+C:\Users\Abby\source\repos\ImageApp\obj\Debug\ImageService.exe
+C:\Users\Abby\source\repos\ImageApp\obj\Debug\ImageService.pdb

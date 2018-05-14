@@ -12,12 +12,20 @@ namespace ImageService.ImageService.commands
     class GetConfigCommand : ICommand
     {
 
-
+        /// <summary>
+        ///Constrctor for the appconfig command 
+        /// </summary>
         public GetConfigCommand()
         {
 
         }
 
+        /// <summary>
+        ///Executes the log command
+        /// </summary>
+        /// <param string[]="args"></param>
+        /// <param out bool="result"></param>
+        /// <return the log ></return>
         public string Execute(string[] args, out bool result)
         {
 

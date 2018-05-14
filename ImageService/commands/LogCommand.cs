@@ -14,12 +14,20 @@ namespace ImageService.ImageService.commands
     class LogCommand : ICommand
     {
         
-
+        /// <summary>
+        /// LogCommand constructor
+        /// </summary>
         public LogCommand()
         {
             
         }
 
+        /// <summary>
+        ///Executes the log command
+        /// </summary>
+        /// <param string[]="args"></param>
+        /// <param out bool="result"></param>
+        /// <return the log ></return>
         public string Execute(string[] args, out bool result)
         {
             EventLog[] eventLogs = EventLog.GetEventLogs();
